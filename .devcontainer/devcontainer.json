@@ -1,0 +1,45 @@
+{
+  "name": "Laravel",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/LaravelResumeGenerationSystem",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [
+    "phpmyadmin:80"
+  ],
+  "portsAttributes": {
+    "80": {
+      "label": "Laravel",
+      "onAutoForward": "openBrowser"
+    },
+    "phpmyadmin:80": {
+      "label": "phpMyAdmin",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "postCreateCommand": "/usr/local/bin/install-laravel.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "bmewburn.vscode-intelephense-client",
+        "bradlc.vscode-tailwindcss",
+        "codingyu.laravel-goto-view",
+        "dbaeumer.vscode-eslint",
+        "editorconfig.editorconfig",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "mikestead.dotenv",
+        "ms-azuretools.vscode-docker",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-mysql",
+        "onecentlin.laravel-blade",
+        "onecentlin.laravel5-snippets",
+        "open-southeners.laravel-pint",
+        "ryannaddy.laravel-artisan",
+        "shufo.vscode-blade-formatter",
+        "xdebug.php-debug"
+      ]
+    }
+  }
+}
