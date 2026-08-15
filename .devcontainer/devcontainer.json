@@ -38,7 +38,9 @@
         "open-southeners.laravel-pint",
         "ryannaddy.laravel-artisan",
         "shufo.vscode-blade-formatter",
-        "xdebug.php-debug"
+        "xdebug.php-debug",
+        "yzane.markdown-pdf",
+        "tomoki1207.pdf"
       ]
     }
   }

@@ -1,0 +1,427 @@
+:root {
+    --ink: #17212b;
+    --muted: #66727d;
+    --line: #dce3e8;
+    --paper: #fffefb;
+    --canvas: #edf1ef;
+    --teal: #176b6b;
+    --orange: #ef8f57;
+}
+
+/* 入力画面と帳票プレビューで共通して使う基本スタイル。 */
+body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: "DM Sans", "Noto Sans JP", sans-serif;
+}
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+button {
+    cursor: pointer;
+}
+.resume-shell {
+    min-height: 100vh;
+}
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px clamp(20px, 5vw, 72px);
+    background: #17212b;
+    color: white;
+}
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--orange);
+    color: #17212b;
+    font-weight: 800;
+}
+.topbar small {
+    color: #b9c7c9;
+}
+.workspace {
+    display: grid;
+    grid-template-columns: minmax(360px, 510px) minmax(600px, 1fr);
+    gap: 28px;
+    max-width: 1560px;
+    margin: 0 auto;
+    padding: 36px clamp(20px, 5vw, 72px) 72px;
+}
+/* フォームとプレビューを横並びにし、狭い画面では縦並びへ切り替える。 */
+.form-panel {
+    min-width: 0;
+}
+.intro {
+    margin-bottom: 26px;
+}
+.eyebrow {
+    color: var(--teal);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+h1 {
+    margin: 7px 0 8px;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+}
+.intro p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+}
+.section-card {
+    margin-bottom: 16px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 10px 28px rgba(23, 33, 43, 0.04);
+}
+.section-heading {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+.section-heading h2 {
+    margin: 0;
+    font-size: 17px;
+}
+.section-heading p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+.field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.field {
+    display: grid;
+    gap: 7px;
+    margin-bottom: 14px;
+}
+.field.full {
+    grid-column: 1 / -1;
+}
+.field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #43515a;
+}
+.field input,
+.field textarea,
+.field select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ccd7db;
+    border-radius: 8px;
+    padding: 11px 12px;
+    outline: none;
+    background: white;
+    color: var(--ink);
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+.field textarea {
+    min-height: 105px;
+    resize: vertical;
+    line-height: 1.65;
+}
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(23, 107, 107, 0.12);
+}
+.repeatable {
+    display: grid;
+    gap: 12px;
+}
+.repeatable-item {
+    padding: 16px;
+    border: 1px solid #dfe6e8;
+    border-radius: 10px;
+    background: #fbfcfb;
+}
+.company-form-item {
+    border-color: #b9d2cf;
+}
+.nested-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 18px 0 10px;
+    padding-top: 14px;
+    border-top: 1px solid #dce3e8;
+}
+.nested-item {
+    margin-top: 10px;
+    padding: 14px;
+    border: 1px solid #e5eaeb;
+    border-radius: 8px;
+    background: #fff;
+}
+.item-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.item-heading strong {
+    font-size: 13px;
+}
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 13px;
+}
+.btn-primary {
+    background: var(--teal);
+    color: white;
+}
+.btn-primary:hover {
+    background: #105757;
+}
+.btn-secondary {
+    background: #e6f0ee;
+    color: var(--teal);
+}
+.btn-quiet {
+    padding: 5px 8px;
+    background: transparent;
+    color: #bb4f43;
+    font-size: 12px;
+}
+.btn-add {
+    width: 100%;
+    margin-top: 12px;
+    border: 1px dashed #a9c4c1;
+    background: #f2f8f6;
+    color: var(--teal);
+}
+.form-actions {
+    position: sticky;
+    bottom: 18px;
+    z-index: 2;
+    display: flex;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 12px 30px rgba(23, 33, 43, 0.12);
+}
+.form-actions .btn-primary {
+    flex: 1;
+}
+.preview-panel {
+    min-width: 0;
+}
+.preview-label {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.paper-wrap {
+    overflow: auto;
+    padding: 28px;
+    border-radius: 16px;
+    background: #dfe5e1;
+}
+.paper {
+    min-width: 720px;
+    max-width: 860px;
+    min-height: 1000px;
+    margin: 0 auto;
+    padding: 48px 54px;
+    box-sizing: border-box;
+    background: var(--paper);
+    color: #20252a;
+    box-shadow: 0 16px 35px rgba(23, 33, 43, 0.16);
+    font-family: "Noto Sans JP", sans-serif;
+}
+/* 添付された職務経歴書に寄せた白い帳票領域。 */
+.paper-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    border-bottom: 2px solid #20252a;
+    padding-bottom: 15px;
+}
+.paper-header h2 {
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: 0.35em;
+}
+.paper-meta {
+    text-align: right;
+    font-size: 12px;
+    line-height: 1.8;
+}
+.paper-section {
+    margin-top: 25px;
+}
+.paper-section h3 {
+    margin: 0 0 9px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #20252a;
+    font-size: 15px;
+}
+.paper-section p {
+    margin: 0;
+    white-space: pre-line;
+    font-size: 12px;
+    line-height: 1.8;
+}
+.paper-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+}
+.paper-table th,
+.paper-table td {
+    border: 1px solid #20252a;
+    padding: 7px 8px;
+    vertical-align: top;
+}
+.paper-table th {
+    background: #e9e9e7;
+    text-align: left;
+    font-weight: 700;
+}
+.paper-table td ul {
+    margin: 0;
+    padding-left: 17px;
+}
+.paper-table td li {
+    margin: 2px 0;
+}
+.project-block {
+    padding: 10px 0;
+    border-bottom: 1px solid #aeb4b2;
+}
+.project-block:last-child {
+    border-bottom: 0;
+}
+.company-block {
+    margin-bottom: 18px;
+}
+.company-title {
+    margin: 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #20252a;
+    font-size: 12px;
+    font-weight: 800;
+}
+.project-title {
+    margin: 0 0 5px;
+    font-size: 12px;
+    font-weight: 800;
+}
+.project-detail {
+    margin: 3px 0;
+    font-size: 10px;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+.paper-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+.empty-note {
+    color: #9ba5a5;
+    font-style: italic;
+}
+@media (max-width: 1050px) {
+    .workspace {
+        grid-template-columns: 1fr;
+    }
+    .preview-panel {
+        order: -1;
+    }
+    .paper-wrap {
+        max-height: 70vh;
+    }
+}
+@media (max-width: 620px) {
+    .topbar {
+        padding: 18px 20px;
+    }
+    .topbar small {
+        display: none;
+    }
+    .workspace {
+        padding: 24px 14px 48px;
+    }
+    .section-card {
+        padding: 16px;
+    }
+    .field-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .field.full {
+        grid-column: auto;
+    }
+    .paper-wrap {
+        padding: 12px;
+    }
+    .paper {
+        min-width: 680px;
+        padding: 32px 38px;
+    }
+}
+@media print {
+    .topbar,
+    .form-panel,
+    .preview-label {
+        display: none;
+    }
+    .workspace {
+        display: block;
+        padding: 0;
+    }
+    .paper-wrap {
+        padding: 0;
+        background: white;
+    }
+    .paper {
+        box-shadow: none;
+    }
+}
