@@ -25,6 +25,23 @@
                 <p>・ {{ $resume['specialty'] ?? '' }}</p>
             </div>
             <div class="paper-section">
+                <h3>■ 技術系アカウント・ポートフォリオ</h3>
+                @php
+                    $links = collect($resume['links'] ?? [])->filter(fn($link) => !empty($link['url']));
+                @endphp
+                @if ($links->isNotEmpty())
+                    <ul>
+                        @foreach ($links as $link)
+                            <li><span>{{ ($link['type'] ?? '') === 'その他' ? $link['type_custom'] ?? '' : $link['type'] ?? '' }}：</span><a
+                                    href="{{ $link['url'] }}" target="_blank" rel="noreferrer">{{ $link['url'] }}</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="empty-note">技術系アカウントやポートフォリオを入力してください</p>
+                @endif
+            </div>
+            <div class="paper-section">
                 <h3>■ PCスキル / テクニカルスキル</h3>
                 <table class="paper-table">
                     <thead>
@@ -79,11 +96,17 @@
                 @foreach ($companies as $company)
                     <div class="company-block">
                         <p class="company-title">
-                            勤務先：{{ $company['name'] }}（{{ $company['period_from'] ?? '' }}〜{{ $company['period_to'] ?? '' }}）
+                            勤務先：{{ $company['name'] ?: (($company['employment_type'] ?? '') === 'フリーランス' ? 'フリーランス' : '所属企業名未入力') }}（{{ $company['period_from'] ?? '' }}〜{{ $company['period_to'] ?? '' }}）
                         </p>
-                        @if ($company['industry'] || $company['established'] || $company['capital'] || $company['employees'])
+                        @if (
+                            ($company['employment_type'] ?? '') ||
+                                $company['industry'] ||
+                                $company['established'] ||
+                                $company['capital'] ||
+                                $company['employees']
+                        )
                             <p class="project-detail">
-                                {{ collect([$company['industry'], $company['established'] ? '設立：' . $company['established'] : null, $company['capital'] ? '資本金：' . $company['capital'] : null, $company['employees'] ? '従業員数：' . $company['employees'] : null])->filter()->join(' / ') }}
+                                {{ collect([($company['employment_type'] ?? '') === 'その他' ? $company['employment_type_custom'] ?? '' : $company['employment_type'] ?? '', $company['industry'], $company['established'] ? '設立：' . $company['established'] : null, $company['capital'] ? '資本金：' . $company['capital'] : null, $company['employees'] ? '従業員数：' . $company['employees'] : null])->filter()->join(' / ') }}
                             </p>
                         @endif
                         @foreach (collect($company['projects'] ?? [])->sortByDesc('period_from')->values() as $project)
@@ -94,8 +117,11 @@
                                 <p class="project-detail">{{ $project['description'] }}</p>
                                 <p class="project-detail"><b>【担当工程】</b><br>{{ $project['processes'] }}</p>
                                 <p class="project-detail"><b>【使用技術・DB・OS】</b><br>{{ $project['technologies'] }}</p>
-                                <p class="project-detail"><b>【組織・役割】</b><br>{{ $project['role'] }} /
-                                    {{ $project['team'] }}</p>
+                                <p class="project-detail">
+                                    <b>【組織・役割】</b><br>{{ ($project['role'] ?? '') === 'その他' ? $project['role_custom'] ?? '' : $project['role'] ?? '' }}
+                                    /
+                                    {{ $project['team'] }}
+                                </p>
                             </div>
                         @endforeach
                     </div>

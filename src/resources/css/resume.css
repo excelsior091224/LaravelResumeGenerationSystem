@@ -57,7 +57,7 @@ button {
 }
 .workspace {
     display: grid;
-    grid-template-columns: minmax(360px, 510px) minmax(600px, 1fr);
+    grid-template-columns: minmax(560px, 1.25fr) minmax(420px, 0.85fr);
     gap: 28px;
     max-width: 1560px;
     margin: 0 auto;
@@ -246,6 +246,9 @@ h1 {
 }
 .preview-panel {
     min-width: 0;
+    position: sticky;
+    top: 20px;
+    align-self: start;
 }
 .preview-label {
     display: flex;
@@ -259,16 +262,17 @@ h1 {
 }
 .paper-wrap {
     overflow: auto;
-    padding: 28px;
+    max-height: calc(100vh - 150px);
+    padding: 20px;
     border-radius: 16px;
     background: #dfe5e1;
 }
 .paper {
-    min-width: 720px;
+    min-width: 0;
     max-width: 860px;
     min-height: 1000px;
     margin: 0 auto;
-    padding: 48px 54px;
+    padding: 36px 34px;
     box-sizing: border-box;
     background: var(--paper);
     color: #20252a;
@@ -307,6 +311,15 @@ h1 {
     white-space: pre-line;
     font-size: 12px;
     line-height: 1.8;
+}
+.paper-section a {
+    color: inherit;
+    overflow-wrap: anywhere;
+}
+.paper-section li {
+    margin: 4px 0;
+    font-size: 11px;
+    line-height: 1.6;
 }
 .paper-table {
     width: 100%;
@@ -374,6 +387,7 @@ h1 {
     }
     .preview-panel {
         order: -1;
+        position: static;
     }
     .paper-wrap {
         max-height: 70vh;
@@ -403,7 +417,7 @@ h1 {
         padding: 12px;
     }
     .paper {
-        min-width: 680px;
+        min-width: 0;
         padding: 32px 38px;
     }
 }
@@ -419,6 +433,7 @@ h1 {
     }
     .paper-wrap {
         padding: 0;
+        max-height: none;
         background: white;
     }
     .paper {

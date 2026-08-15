@@ -28,6 +28,10 @@ class GenerateResumeRequest extends FormRequest
             'as_of_date' => ['required', 'date'],
             'summary' => ['nullable', 'string', 'max:3000'],
             'specialty' => ['nullable', 'string', 'max:500'],
+            'links' => ['array', 'max:10'],
+            'links.*.type' => ['nullable', 'string', 'in:GitHub,Qiita,Zenn,ポートフォリオ,その他'],
+            'links.*.type_custom' => ['nullable', 'string', 'max:100'],
+            'links.*.url' => ['nullable', 'url', 'regex:/^https?:\/\//i', 'max:500'],
 
             // スキルは画面上で追加・削除される配列として検証する。
             'skills' => ['array', 'max:100'],
@@ -39,7 +43,9 @@ class GenerateResumeRequest extends FormRequest
 
             // 所属企業を親、プロジェクトを子とする階層データを検証する。
             'companies' => ['array', 'max:20'],
-            'companies.*.name' => ['required', 'string', 'max:200'],
+            'companies.*.name' => ['nullable', 'string', 'max:200'],
+            'companies.*.employment_type' => ['required', 'string', 'in:正社員,契約社員,派遣社員,パート・アルバイト,業務委託,フリーランス,役員,その他'],
+            'companies.*.employment_type_custom' => ['nullable', 'string', 'max:100'],
             'companies.*.period_from' => ['nullable', 'date_format:Y-m'],
             'companies.*.period_to' => ['nullable', 'date_format:Y-m', 'after_or_equal:companies.*.period_from'],
             'companies.*.industry' => ['nullable', 'string', 'max:200'],
@@ -52,6 +58,7 @@ class GenerateResumeRequest extends FormRequest
             'companies.*.projects.*.name' => ['required', 'string', 'max:200'],
             'companies.*.projects.*.description' => ['nullable', 'string', 'max:3000'],
             'companies.*.projects.*.role' => ['nullable', 'string', 'max:100'],
+            'companies.*.projects.*.role_custom' => ['nullable', 'string', 'max:100'],
             'companies.*.projects.*.team' => ['nullable', 'string', 'max:500'],
             'companies.*.projects.*.processes' => ['nullable', 'string', 'max:500'],
             'companies.*.projects.*.technologies' => ['nullable', 'string', 'max:500'],

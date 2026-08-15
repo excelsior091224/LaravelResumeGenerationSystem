@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="resume-shell" x-data="resumeForm({{ Js::from($skillCategories) }})">
+    <div class="resume-shell" x-data="resumeForm({{ Js::from($skillCategories) }}, {{ Js::from($teamRoles) }})">
         {{-- 画面のヘッダー。入力内容を保存しない方針も明示する。 --}}
         <header class="topbar">
             <div class="brand"><span class="brand-mark">R</span><span>Resume Foundry</span></div>
@@ -41,10 +41,34 @@
                                     name="full_name" x-model="resume.full_name" required></div>
                             <div class="field"><label for="as_of_date">基準日 *</label><input id="as_of_date"
                                     type="date" name="as_of_date" x-model="resume.as_of_date" required></div>
-                            <div class="field"><label for="email">メールアドレス</label><input id="email"
-                                    type="email" name="email" x-model="resume.email"></div>
-                            <div class="field"><label for="phone">電話番号</label><input id="phone" name="phone"
-                                    x-model="resume.phone"></div>
+                            <div class="field full"><label>技術系アカウント・ポートフォリオ</label>
+                                <div class="repeatable">
+                                    <template x-for="(link, index) in resume.links" :key="link.id">
+                                        <div class="field-grid link-row">
+                                            <div class="field"><label>種別</label><select :name="`links[${index}][type]`"
+                                                    x-model="link.type">
+                                                    <option value="">選択してください</option>
+                                                    <option value="GitHub">GitHub</option>
+                                                    <option value="Qiita">Qiita</option>
+                                                    <option value="Zenn">Zenn</option>
+                                                    <option value="ポートフォリオ">ポートフォリオ</option>
+                                                    <option value="その他">その他</option>
+                                                </select>
+                                                <input x-show="link.type === 'その他'"
+                                                    :name="`links[${index}][type_custom]`" x-model="link.type_custom"
+                                                    placeholder="サイト名を入力">
+                                            </div>
+                                            <div class="field"><label>URL</label><input type="url"
+                                                    :name="`links[${index}][url]`" x-model="link.url"
+                                                    placeholder="https://example.com"></div>
+                                            <button type="button" class="btn btn-quiet"
+                                                @click="removeItem('links', index)"
+                                                x-show="resume.links.length > 1">削除</button>
+                                        </div>
+                                    </template>
+                                </div>
+                                <button type="button" class="btn btn-add" @click="addLink">＋ リンクを追加</button>
+                            </div>
                         </div>
                     </section>
 
@@ -91,15 +115,16 @@
                                                 placeholder="例：使用した技術名"></div>
                                         <div class="field"><label>経験年数</label><input :name="`skills[${index}][years]`"
                                                 x-model="skill.years" placeholder="例：2年"></div>
-                                        <div class="field"><label>経験区分</label><select :name="`skills[${index}][level]`"
-                                                x-model="skill.level">
+                                        <div class="field"><label>経験区分</label><select
+                                                :name="`skills[${index}][level]`" x-model="skill.level">
                                                 <option value="">選択してください</option>
                                                 <option value="業務使用">業務使用</option>
                                                 <option value="個人開発">個人開発</option>
                                                 <option value="自己研鑽">自己研鑽</option>
                                             </select></div>
-                                        <div class="field full"><label>備考</label><input :name="`skills[${index}][note]`"
-                                                x-model="skill.note" placeholder="例：設計から実装、運用まで担当"></div>
+                                        <div class="field full"><label>備考</label><input
+                                                :name="`skills[${index}][note]`" x-model="skill.note"
+                                                placeholder="例：設計から実装、運用まで担当"></div>
                                     </div>
                                 </div>
                             </template>
@@ -137,7 +162,25 @@
                                     <div class="field-grid">
                                         <div class="field"><label>企業名</label><input
                                                 :name="`companies[${companyIndex}][name]`" x-model="company.name"
-                                                placeholder="例：株式会社サンプル"></div>
+                                                :placeholder="company.employment_type === 'フリーランス' ? '任意：屋号・氏名など' : '例：株式会社サンプル'">
+                                        </div>
+                                        <div class="field"><label>雇用形態・契約形態 *</label><select
+                                                :name="`companies[${companyIndex}][employment_type]`"
+                                                x-model="company.employment_type">
+                                                <option value="">選択してください</option>
+                                                <option value="正社員">正社員</option>
+                                                <option value="契約社員">契約社員</option>
+                                                <option value="派遣社員">派遣社員</option>
+                                                <option value="パート・アルバイト">パート・アルバイト</option>
+                                                <option value="業務委託">業務委託</option>
+                                                <option value="フリーランス">フリーランス</option>
+                                                <option value="役員">役員</option>
+                                                <option value="その他">その他</option>
+                                            </select>
+                                            <input x-show="company.employment_type === 'その他'"
+                                                :name="`companies[${companyIndex}][employment_type_custom]`"
+                                                x-model="company.employment_type_custom" placeholder="契約形態を入力">
+                                        </div>
                                         <div class="field"><label>在籍期間</label>
                                             <div class="field-grid"><input type="month"
                                                     :name="`companies[${companyIndex}][period_from]`"
@@ -178,9 +221,26 @@
                                                                 :name="`companies[${companyIndex}][projects][${projectIndex}][period_to]`"
                                                                 x-model="project.period_to"></div>
                                                     </div>
-                                                    <div class="field"><label>組織・役割</label><input
+                                                    <div class="field"><label>組織・役割</label><select
                                                             :name="`companies[${companyIndex}][projects][${projectIndex}][role]`"
-                                                            x-model="project.role" placeholder="例：開発担当"></div>
+                                                            x-model="project.role">
+                                                            <option value="">選択してください</option>
+                                                            <template x-for="group in roleGroups"
+                                                                :key="group.category">
+                                                                <optgroup :label="group.category">
+                                                                    <template x-for="role in group.roles"
+                                                                        :key="role.value">
+                                                                        <option :value="role.value"
+                                                                            x-text="role.value"></option>
+                                                                    </template>
+                                                                </optgroup>
+                                                            </template>
+                                                            <option value="その他">その他</option>
+                                                        </select>
+                                                        <input x-show="project.role === 'その他'"
+                                                            :name="`companies[${companyIndex}][projects][${projectIndex}][role_custom]`"
+                                                            x-model="project.role_custom" placeholder="具体的な役割を入力">
+                                                    </div>
                                                     <div class="field full"><label>プロジェクト名</label><input
                                                             :name="`companies[${companyIndex}][projects][${projectIndex}][name]`"
                                                             x-model="project.name" placeholder="例：社内業務支援システム"></div>

@@ -17,6 +17,12 @@ class ResumeController extends Controller
                 512,
                 JSON_THROW_ON_ERROR,
             ),
+            'teamRoles' => json_decode(
+                file_get_contents(resource_path('data/team-roles.json')),
+                true,
+                512,
+                JSON_THROW_ON_ERROR,
+            ),
         ]);
     }
 
