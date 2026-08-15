@@ -40,7 +40,10 @@
         "shufo.vscode-blade-formatter",
         "xdebug.php-debug",
         "yzane.markdown-pdf",
-        "tomoki1207.pdf"
+        "tomoki1207.pdf",
+        "davidanson.vscode-markdownlint",
+        "cweijan.vscode-office",
+        "yzhang.markdown-all-in-one"
       ]
     }
   }
