@@ -390,27 +390,40 @@ PhpWordで文書作成
 
 ## 12. PDF出力
 
-PDFはプレビューと同じHTMLをChromiumでPDF化する方式を第一候補とする。
+本番環境は自由度の低いレンタルサーバーを想定するため、ChromiumやLibreOfficeなどの外部実行アプリケーションを必要とする方式は採用しない。
 
 ```text
-Blade HTML
+ResumeData
     ↓
-Chromium
+PDF専用Blade + PDF専用CSS
     ↓
-PDF
+Dompdf
+    ↓
+PDFダウンロード
 ```
 
-この方式はプレビューとの見た目を合わせやすい。現在のDockerイメージにはPDF生成用のChromiumと日本語フォントがないため、実装時にDockerfileへ追加する。
+PDF生成には純PHPライブラリである`dompdf/dompdf`を第一候補としてComposerで導入する。
 
-代替案として、PhpWordで作成したDOCXをLibreOfficeでPDFへ変換する方式もある。Word文書との見た目の一致を優先する場合はこちらを検討する。ただし、コンテナへの導入と変換処理の運用確認が必要になる。
+```bash
+composer require dompdf/dompdf
+```
+
+画面用プレビューのHTML/CSSとPDF帳票用のHTML/CSSは分ける。Dompdfはブラウザの描画エンジンではないため、PDF専用テンプレートではA4、単純な表、罫線、余白、改ページ制御を中心にする。CSS Grid、Flexbox、JavaScript描画、外部フォントなどへ強く依存しない。
+
+日本語フォントはサーバーへインストールせず、ライセンス上利用可能なNoto Sans JPなどをプロジェクトに同梱してPDFライブラリへ登録する。PDF用の一時ディレクトリは`storage/app/dompdf-temp/`のような専用・非公開パスにする。
 
 初期方針:
 
 ```text
 DOCX: PhpWord
-PDF: HTML + Chromium
-プレビュー: PDFと共通のHTML
+PDF: Dompdf（純PHP）
+プレビュー: 画面用Blade
+PDF帳票: PDF専用Blade
 ```
+
+`mPDF`は外部アプリ不要の代替候補だが、ライセンスと日本語帳票の検証が必要なため、Dompdfで要件を満たせない場合に評価する。ブラウザの印刷機能は、手動でPDF保存する代替手段として残す。外部PDF変換APIは職務経歴書の内容を第三者へ送信するため、原則として採用しない。
+
+詳細は`docs/design/pdf-output-strategy.md`を参照する。
 
 ## 13. 推奨ディレクトリ構成
 
@@ -480,7 +493,9 @@ resources/
 ### Phase 2: DOCX/PDF
 
 - PhpWord導入
-- ChromiumまたはLibreOffice導入
+- Dompdf導入
+- PDF専用BladeとA4帳票CSSの作成
+- 日本語フォントの登録
 - 日本語フォント確認
 - 一時ファイル削除
 - DOCX/PDFダウンロードテスト
@@ -514,7 +529,7 @@ SESSION_DRIVER=array
 CACHE_STORE=array
 QUEUE_CONNECTION=sync
 PhpWordでDOCX
-ChromiumでPDF
+PDF専用Blade + DompdfでPDF
 Laravel HTTP ClientでAI連携
 OpenAI/GeminiをProviderで切り替え
 ```

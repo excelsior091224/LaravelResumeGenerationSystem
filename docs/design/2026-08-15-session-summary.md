@@ -247,15 +247,15 @@ app/Services/Document/ResumeDocxGenerator.php
 
 ### 9.4 PDF出力
 
-第一候補はBladeのHTMLをChromiumでPDF化する方式。
+レンタルサーバーへのデプロイを想定し、ChromiumやLibreOfficeのような外部実行アプリケーションを必要とする方式は本番の第一候補にしない。
 
 ```text
-Blade HTML → Chromium → PDF
+ResumeData → PDF専用Blade + PDF専用CSS → Dompdf → PDF
 ```
 
-プレビューとPDFの見た目を揃えやすい一方、DockerfileへのChromiumと日本語フォントの追加が必要。
+第一候補は、Composerで導入できる純PHPライブラリ`dompdf/dompdf`とする。画面用プレビューとPDF帳票は別テンプレートにし、日本語フォントはプロジェクトへ同梱する。外部PDF変換APIは個人情報を第三者へ送るため、原則として採用しない。
 
-代替案として、DOCXをLibreOfficeでPDFへ変換する方式も検討する。
+ブラウザ印刷は、利用者が手動でPDFへ保存する代替手段として残す。詳細は`docs/design/pdf-output-strategy.md`を参照する。
 
 ### 9.5 AIによる職務要約
 
@@ -290,7 +290,7 @@ ResumeSummaryProvider
 4. DTOを使ったサーバー側プレビューへ移行する
 5. 代表的な入力パターンのFeatureテストを追加する
 6. DOCX生成を実装する
-7. PDF生成環境をDockerへ追加する
+7. Dompdf、日本語フォント、PDF専用帳票を実装する
 8. AI要約をProvider構成で実装する
 9. ログ、レート制限、API送信同意などを整備する
 
@@ -341,6 +341,14 @@ ResumeSummaryProvider
 ### 画面レイアウト
 
 入力欄が狭くなりすぎないよう、デスクトップでは入力フォームを広め、プレビューを右側の縮小・縦スクロール領域として表示する。画面幅が狭い場合は1カラムへ切り替える。
+
+### PDF出力方針
+
+レンタルサーバーでの稼働を優先し、PDFは外部アプリ不要のDompdfによる純PHP方式を第一候補とする。詳細な比較、ライセンス・日本語フォント・一時ディレクトリ・外部APIの注意事項は次の文書に記録した。
+
+```text
+docs/design/pdf-output-strategy.md
+```
 
 ## 14. PC間共有の運用
 
