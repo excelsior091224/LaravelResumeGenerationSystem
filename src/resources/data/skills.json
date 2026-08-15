@@ -1,0 +1,104 @@
+{
+    "languages": {
+        "label": "言語",
+        "skills": [
+            "PHP",
+            "JavaScript",
+            "TypeScript",
+            "HTML",
+            "CSS",
+            "Python",
+            "Java",
+            "C#",
+            "Ruby",
+            "Go",
+            "SQL"
+        ]
+    },
+    "frameworks": {
+        "label": "フレームワーク",
+        "skills": [
+            "Laravel",
+            "Symfony",
+            "React",
+            "Vue.js",
+            "Next.js",
+            "Nuxt.js",
+            "Node.js",
+            "Ruby on Rails",
+            "Spring Boot",
+            ".NET"
+        ]
+    },
+    "middleware": {
+        "label": "ミドルウェア",
+        "skills": [
+            "Apache",
+            "Nginx",
+            "IIS",
+            "Docker",
+            "Kubernetes",
+            "Redis",
+            "RabbitMQ",
+            "Apache Kafka"
+        ]
+    },
+    "operating_systems": {
+        "label": "OS",
+        "skills": [
+            "Linux",
+            "Ubuntu",
+            "Debian",
+            "CentOS",
+            "Windows Server",
+            "macOS"
+        ]
+    },
+    "infrastructure": {
+        "label": "インフラ",
+        "skills": [
+            "AWS",
+            "Microsoft Azure",
+            "Google Cloud",
+            "Amazon EC2",
+            "Amazon S3",
+            "Amazon RDS",
+            "Terraform",
+            "Ansible",
+            "GitHub Actions"
+        ]
+    },
+    "databases": {
+        "label": "データベース",
+        "skills": [
+            "MySQL",
+            "PostgreSQL",
+            "Oracle Database",
+            "SQL Server",
+            "MongoDB",
+            "SQLite"
+        ]
+    },
+    "design_tools": {
+        "label": "デザインツール",
+        "skills": [
+            "Figma",
+            "Adobe Photoshop",
+            "Adobe Illustrator",
+            "Adobe XD",
+            "Sketch"
+        ]
+    },
+    "development_tools": {
+        "label": "開発ツール・その他",
+        "skills": [
+            "Git",
+            "GitHub",
+            "GitLab",
+            "Jira",
+            "Backlog",
+            "Slack",
+            "Visual Studio Code"
+        ]
+    }
+}
