@@ -183,17 +183,19 @@
                                         </div>
                                         <div class="field"><label>在籍期間</label>
                                             <div class="field-grid">
-                                                <div class="field"><label class="sub-label">開始年月</label><input type="month"
+                                                <div class="field"><label class="sub-label">開始年月</label><input
+                                                        type="month"
                                                         :name="`companies[${companyIndex}][period_from]`"
                                                         x-model="company.period_from"></div>
-                                                <div class="field"><label class="sub-label">終了年月</label><input type="month"
-                                                        :name="`companies[${companyIndex}][period_to]`"
+                                                <div class="field"><label class="sub-label">終了年月</label><input
+                                                        type="month" :name="`companies[${companyIndex}][period_to]`"
                                                         x-model="company.period_to" :disabled="company.is_current"
                                                         @change="if (company.is_current) company.period_to = ''"></div>
                                             </div>
                                             <label class="checkbox-row"><input type="checkbox"
-                                                    :name="`companies[${companyIndex}][is_current]`" x-model="company.is_current"
-                                                    :value="true" @change="if (company.is_current) company.period_to = ''"><span>現在も在籍中</span></label>
+                                                    :name="`companies[${companyIndex}][is_current]`"
+                                                    x-model="company.is_current" :value="true"
+                                                    @change="if (company.is_current) company.period_to = ''"><span>現在も在籍中</span></label>
                                         </div>
                                         <div class="field"><label>事業内容</label><input
                                                 :name="`companies[${companyIndex}][industry]`"
@@ -223,13 +225,19 @@
                                                 <div class="field-grid">
                                                     <div class="field"><label>期間</label>
                                                         <div class="field-grid">
-                                                            <div class="field"><label class="sub-label">開始年月</label><input type="month"
+                                                            <div class="field"><label
+                                                                    class="sub-label">開始年月</label><input
+                                                                    type="month"
                                                                     :name="`companies[${companyIndex}][projects][${projectIndex}][period_from]`"
                                                                     x-model="project.period_from"></div>
-                                                            <div class="field"><label class="sub-label">終了年月</label><input type="month"
+                                                            <div class="field"><label
+                                                                    class="sub-label">終了年月</label><input
+                                                                    type="month"
                                                                     :name="`companies[${companyIndex}][projects][${projectIndex}][period_to]`"
-                                                                    x-model="project.period_to" :disabled="project.is_current"
-                                                                    @change="if (project.is_current) project.period_to = ''"></div>
+                                                                    x-model="project.period_to"
+                                                                    :disabled="project.is_current"
+                                                                    @change="if (project.is_current) project.period_to = ''">
+                                                            </div>
                                                         </div>
                                                         <label class="checkbox-row"><input type="checkbox"
                                                                 :name="`companies[${companyIndex}][projects][${projectIndex}][is_current]`"
