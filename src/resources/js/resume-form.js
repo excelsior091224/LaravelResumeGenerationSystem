@@ -5,6 +5,7 @@ const blankProject = () => ({
     id: crypto.randomUUID(),
     period_from: "",
     period_to: "",
+    is_current: false,
     name: "",
     description: "",
     role: "",
@@ -20,6 +21,7 @@ const blankCompany = () => ({
     employment_type_custom: "",
     period_from: "",
     period_to: "",
+    is_current: false,
     industry: "",
     established: "",
     capital: "",
@@ -177,7 +179,7 @@ window.resumeForm = (skillData, roleData) => ({
                 const projects = [...company.projects].sort((a, b) =>
                     (b.period_from || "").localeCompare(a.period_from || ""),
                 );
-                const companyPeriod = [company.period_from, company.period_to]
+                const companyPeriod = [company.period_from, company.is_current ? "現在" : company.period_to]
                     .filter(Boolean)
                     .join("〜");
                 const companyMeta = [
@@ -191,7 +193,10 @@ window.resumeForm = (skillData, roleData) => ({
                 ]
                     .filter(Boolean)
                     .join(" / ");
-                return `<div class="company-block"><p class="company-title">勤務先：${this.escape(this.displayCompanyName(company))}（${this.escape(companyPeriod)}）</p>${companyMeta ? `<p class="project-detail">${this.escape(companyMeta)}</p>` : ""}${projects.map((project) => `<div class="project-block"><p class="project-title">■ ${this.escape(project.name || "プロジェクト名未入力")}（${this.escape([project.period_from, project.period_to].filter(Boolean).join("〜"))}）</p><p class="project-detail">${this.lines(project.description || "業務内容を入力してください")}</p>${project.processes ? `<p class="project-detail"><b>【担当工程】</b><br>${this.lines(project.processes)}</p>` : ""}${project.technologies ? `<p class="project-detail"><b>【使用技術・DB・OS】</b><br>${this.lines(project.technologies)}</p>` : ""}<p class="project-detail"><b>【組織・役割】</b><br>${this.lines(this.displayRole(project))} / ${this.lines(project.team)}</p></div>`).join("")}</div>`;
+                return `<div class="company-block"><p class="company-title">勤務先：${this.escape(this.displayCompanyName(company))}（${this.escape(companyPeriod)}）</p>${companyMeta ? `<p class="project-detail">${this.escape(companyMeta)}</p>` : ""}${projects.map((project) => {
+                    const projectPeriod = [project.period_from, project.is_current ? "現在" : project.period_to].filter(Boolean).join("〜");
+                    return `<div class="project-block"><p class="project-title">■ ${this.escape(project.name || "プロジェクト名未入力")}（${this.escape(projectPeriod)}）</p><p class="project-detail">${this.lines(project.description || "業務内容を入力してください")}</p>${project.processes ? `<p class="project-detail"><b>【担当工程】</b><br>${this.lines(project.processes)}</p>` : ""}${project.technologies ? `<p class="project-detail"><b>【使用技術・DB・OS】</b><br>${this.lines(project.technologies)}</p>` : ""}<p class="project-detail"><b>【組織・役割】</b><br>${this.lines(this.displayRole(project))} / ${this.lines(project.team)}</p></div>`;
+                }).join("")}</div>`;
             })
             .join("");
         const certifications =

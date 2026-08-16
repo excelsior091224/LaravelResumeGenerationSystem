@@ -130,6 +130,42 @@ h1 {
     font-weight: 700;
     color: #43515a;
 }
+.sub-label {
+    margin-bottom: 0;
+    color: #596b76;
+    font-size: 11px;
+    font-weight: 600;
+}
+.checkbox-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    width: fit-content;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: none;
+}
+.checkbox-row:hover {
+    background: transparent;
+}
+.checkbox-row input[type="checkbox"] {
+    width: 16px !important;
+    height: 16px;
+    min-width: 16px;
+    margin: 0;
+    accent-color: var(--teal);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.checkbox-row span {
+    line-height: 1.4;
+}
 .field input,
 .field textarea,
 .field select {
@@ -144,6 +180,10 @@ h1 {
     transition:
         border-color 0.2s,
         box-shadow 0.2s;
+}
+.field .checkbox-row input[type="checkbox"] {
+    width: 16px !important;
+    min-width: 16px;
 }
 .field textarea {
     min-height: 105px;

@@ -29,6 +29,20 @@ services:
       db:
         condition: service_healthy
 
+  vite:
+    image: node:22-alpine
+    container_name: laravel-vite
+    working_dir: /workspaces/LaravelResumeGenerationSystem/src
+    volumes:
+      - .:/workspaces/LaravelResumeGenerationSystem
+    command: >
+      sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    depends_on:
+      app:
+        condition: service_started
+
   db:
     image: mysql:8.4
     container_name: laravel-db

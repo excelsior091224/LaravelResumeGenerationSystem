@@ -27,7 +27,10 @@
             "Node.js",
             "Ruby on Rails",
             "Spring Boot",
-            ".NET"
+            ".NET",
+            "Django",
+            "Flask",
+            "FastAPI"
         ]
     },
     "middleware": {

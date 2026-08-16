@@ -25,7 +25,7 @@ class GenerateResumeRequest extends FormRequest
         return [
             // 基本情報と職務要約は単一項目として検証する。
             'full_name' => ['required', 'string', 'max:100'],
-            'as_of_date' => ['required', 'date'],
+            'as_of_date' => ['required', 'date_format:Y-m-d'],
             'summary' => ['nullable', 'string', 'max:3000'],
             'specialty' => ['nullable', 'string', 'max:500'],
             'links' => ['array', 'max:10'],
@@ -46,15 +46,62 @@ class GenerateResumeRequest extends FormRequest
             'companies.*.name' => ['nullable', 'string', 'max:200'],
             'companies.*.employment_type' => ['required', 'string', 'in:正社員,契約社員,派遣社員,パート・アルバイト,業務委託,フリーランス,役員,その他'],
             'companies.*.employment_type_custom' => ['nullable', 'string', 'max:100'],
+            'companies.*.is_current' => ['nullable', 'boolean'],
             'companies.*.period_from' => ['nullable', 'date_format:Y-m'],
-            'companies.*.period_to' => ['nullable', 'date_format:Y-m', 'after_or_equal:companies.*.period_from'],
+            'companies.*.period_to' => [
+                'nullable',
+                'date_format:Y-m',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $segments = explode('.', $attribute);
+                    $companyIndex = $segments[1] ?? null;
+
+                    if ($companyIndex === null || $value === null || $value === '') {
+                        return;
+                    }
+
+                    $isCurrent = filter_var(data_get($this->input('companies'), $companyIndex . '.is_current'), FILTER_VALIDATE_BOOLEAN);
+                    if ($isCurrent) {
+                        return;
+                    }
+
+                    $companyFrom = data_get($this->input('companies'), $companyIndex . '.period_from');
+
+                    if (is_string($companyFrom) && $companyFrom !== '' && $value < $companyFrom) {
+                        $fail('終了日は開始日以降で入力してください。');
+                    }
+                },
+            ],
             'companies.*.industry' => ['nullable', 'string', 'max:200'],
             'companies.*.established' => ['nullable', 'string', 'max:50'],
             'companies.*.capital' => ['nullable', 'string', 'max:100'],
             'companies.*.employees' => ['nullable', 'string', 'max:100'],
             'companies.*.projects' => ['array', 'max:30'],
+            'companies.*.projects.*.is_current' => ['nullable', 'boolean'],
             'companies.*.projects.*.period_from' => ['nullable', 'date_format:Y-m'],
-            'companies.*.projects.*.period_to' => ['nullable', 'date_format:Y-m', 'after_or_equal:companies.*.projects.*.period_from'],
+            'companies.*.projects.*.period_to' => [
+                'nullable',
+                'date_format:Y-m',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $segments = explode('.', $attribute);
+                    $companyIndex = $segments[1] ?? null;
+                    $projectIndex = $segments[3] ?? null;
+
+                    if ($companyIndex === null || $projectIndex === null || $value === null || $value === '') {
+                        return;
+                    }
+
+                    $isCurrent = filter_var(data_get($this->input('companies'), $companyIndex . '.projects.' . $projectIndex . '.is_current'), FILTER_VALIDATE_BOOLEAN);
+                    if ($isCurrent) {
+                        return;
+                    }
+
+                    $projectFrom = data_get($this->input('companies'), $companyIndex . '.projects.' . $projectIndex . '.period_from');
+
+                    if (is_string($projectFrom) && $projectFrom !== '' && $value < $projectFrom) {
+                        $fail('プロジェクトの終了日は開始日以降で入力してください。');
+                    }
+                },
+            ],
             'companies.*.projects.*.name' => ['required', 'string', 'max:200'],
             'companies.*.projects.*.description' => ['nullable', 'string', 'max:3000'],
             'companies.*.projects.*.role' => ['nullable', 'string', 'max:100'],
