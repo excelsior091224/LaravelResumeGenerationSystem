@@ -117,4 +117,36 @@ class GenerateResumeRequest extends FormRequest
             'self_pr' => ['nullable', 'string', 'max:5000'],
         ];
     }
+
+    public function withValidator(\Illuminate\Validation\Validator $validator): void
+    {
+        $validator->after(function (\Illuminate\Validation\Validator $validator): void {
+            foreach ((array) $this->input('links', []) as $index => $link) {
+                $type = (string) ($link['type'] ?? '');
+                $custom = trim((string) ($link['type_custom'] ?? ''));
+
+                if ($type === 'その他' && $custom === '') {
+                    $validator->errors()->add("links.{$index}.type_custom", 'リンク種別が「その他」の場合は、サイト名を入力してください。');
+                }
+            }
+
+            foreach ((array) $this->input('companies', []) as $companyIndex => $company) {
+                $employmentType = (string) ($company['employment_type'] ?? '');
+                $employmentCustom = trim((string) ($company['employment_type_custom'] ?? ''));
+
+                if ($employmentType === 'その他' && $employmentCustom === '') {
+                    $validator->errors()->add("companies.{$companyIndex}.employment_type_custom", '雇用形態が「その他」の場合は、契約形態を入力してください。');
+                }
+
+                foreach ((array) ($company['projects'] ?? []) as $projectIndex => $project) {
+                    $role = (string) ($project['role'] ?? '');
+                    $roleCustom = trim((string) ($project['role_custom'] ?? ''));
+
+                    if ($role === 'その他' && $roleCustom === '') {
+                        $validator->errors()->add("companies.{$companyIndex}.projects.{$projectIndex}.role_custom", '担当工程が「その他」の場合は、具体的な役割を入力してください。');
+                    }
+                }
+            }
+        });
+    }
 }

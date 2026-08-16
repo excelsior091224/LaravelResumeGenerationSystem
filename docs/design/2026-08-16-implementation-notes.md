@@ -1,26 +1,25 @@
-# アプリ実装メモ
+# 2026-08-16 実装メモ
 
 ## 概要
 
-この README は実装メモと開発ノートを置くためのファイルです。
-日々の進捗や設計のメモは [../docs/design](../docs/design) にまとめる方針で、ここではアプリ実装に直接関係する情報を書きます。
+このメモは、職務経歴書アプリの実装に直接関係する開発ノートを記録するためのものです。
 
 ## 主要コンポーネント
 
-- フォーム: `resources/views/resume/create.blade.php`
-- バリデーション: `app/Http/Requests/GenerateResumeRequest.php`
-- スタイル: `resources/css/resume.css`
-- JavaScript: `resources/js/resume-form.js`
-- ルート: `routes/web.php`
+- フォーム: `src/resources/views/resume/create.blade.php`
+- バリデーション: `src/app/Http/Requests/GenerateResumeRequest.php`
+- スタイル: `src/resources/css/resume.css`
+- JavaScript: `src/resources/js/resume-form.js`
+- ルート: `src/routes/web.php`
 
 ## 実施した修正
 
 ### CSS / Vite の問題
 
 - CSS の import 順序が崩れており、職務経歴書用スタイルが読み込まれていなかった。
-- `resources/css/app.css` の `@import "./resume.css";` を先頭に移動させた。
+- `src/resources/css/app.css` の `@import "./resume.css";` を先頭に移動させた。
 - Vite と Laravel のホスト/ポートが混在していたため、ブラウザが古い URL を利用していた。
-- `public/hot` を削除し、ビルド済みの `/build/` アセット参照へ戻した。
+- `src/public/hot` を削除し、ビルド済みの `/build/` アセット参照へ戻した。
 
 ### バリデーションの強化
 
@@ -47,5 +46,5 @@ php artisan test tests/Feature/ResumeValidationTest.php
 
 ## 参照
 
-- 設計メモ: [../docs/design](../docs/design)
+- 設計メモ: `docs/design/resume-generation-system.md`
 - 実装メモ: このファイル
