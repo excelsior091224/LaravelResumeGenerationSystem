@@ -72,11 +72,10 @@ PDF用のCSSでは、次のようなDompdfで安定しやすい表現だけを�
 
 日本語PDFでは、サーバーにインストールされているフォントへ依存しない。
 
-ライセンス上利用可能な日本語フォントをプロジェクトへ同梱し、Dompdfへ登録する。候補はNoto Sans JPまたはNoto Serif JPとする。
+ライセンス上利用可能な日本語フォントをプロジェクトへ同梱し、Dompdfへ登録する。現在はIPAex Gothicを`resources/fonts/IPAexGothic.ttf`として同梱する。
 
 ```text
-resources/fonts/NotoSansJP-Regular.ttf
-resources/fonts/NotoSansJP-Bold.ttf
+resources/fonts/IPAexGothic.ttf
 ```
 
 実装時には次を確認する。

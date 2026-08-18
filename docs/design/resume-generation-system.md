@@ -410,7 +410,7 @@ composer require dompdf/dompdf
 
 画面用プレビューのHTML/CSSとPDF帳票用のHTML/CSSは分ける。Dompdfはブラウザの描画エンジンではないため、PDF専用テンプレートではA4、単純な表、罫線、余白、改ページ制御を中心にする。CSS Grid、Flexbox、JavaScript描画、外部フォントなどへ強く依存しない。
 
-日本語フォントはサーバーへインストールせず、ライセンス上利用可能なNoto Sans JPなどをプロジェクトに同梱してPDFライブラリへ登録する。PDF用の一時ディレクトリは`storage/app/dompdf-temp/`のような専用・非公開パスにする。
+日本語フォントはサーバーへインストールせず、ライセンス上利用可能なIPAex Gothicを`resources/fonts/IPAexGothic.ttf`としてプロジェクトに同梱し、PDFライブラリへ登録する。PDF用の一時ディレクトリは`storage/app/dompdf-temp/`のような専用・非公開パスにする。
 
 初期方針:
 

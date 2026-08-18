@@ -11,6 +11,18 @@ if [ ! -f "$APP_PATH/artisan" ]; then
     rm -rf /tmp/laravel
 fi
 
+if [ ! -f "$APP_PATH/vendor/autoload.php" ]; then
+    composer install --working-dir="$APP_PATH" --no-interaction
+fi
+
+if [ ! -f "$APP_PATH/.env" ]; then
+    cp "$APP_PATH/.env.example" "$APP_PATH/.env"
+fi
+
+if ! grep -q '^APP_KEY=.' "$APP_PATH/.env"; then
+    php "$APP_PATH/artisan" key:generate --force --no-interaction
+fi
+
 chgrp -R www-data "$APP_PATH/storage" "$APP_PATH/bootstrap/cache"
 chmod -R ug+rwX "$APP_PATH/storage" "$APP_PATH/bootstrap/cache"
 find "$APP_PATH/storage" "$APP_PATH/bootstrap/cache" -type d -exec chmod g+s {} +

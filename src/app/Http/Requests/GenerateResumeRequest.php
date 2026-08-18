@@ -118,6 +118,89 @@ class GenerateResumeRequest extends FormRequest
         ];
     }
 
+    protected function prepareForValidation(): void
+    {
+        $input = $this->all();
+
+        if (array_key_exists('links', $input)) {
+            $input['links'] = array_values(array_filter(
+                (array) $input['links'],
+                fn(mixed $link): bool => is_array($link) && $this->hasAnyValue($link, ['type', 'type_custom', 'url']),
+            ));
+        }
+
+        if (array_key_exists('skills', $input)) {
+            $input['skills'] = array_values(array_filter(
+                (array) $input['skills'],
+                fn(mixed $skill): bool => is_array($skill) && $this->hasAnyValue($skill, ['category', 'name', 'years', 'level', 'note']),
+            ));
+        }
+
+        if (array_key_exists('certifications', $input)) {
+            $input['certifications'] = array_values(array_filter(
+                (array) $input['certifications'],
+                fn(mixed $certification): bool => is_array($certification) && $this->hasAnyValue($certification, ['date', 'name']),
+            ));
+        }
+
+        if (array_key_exists('companies', $input)) {
+            $input['companies'] = array_values(array_filter(array_map(function (mixed $company): mixed {
+                if (! is_array($company)) {
+                    return null;
+                }
+
+                $company['projects'] = array_values(array_filter(
+                    (array) ($company['projects'] ?? []),
+                    fn(mixed $project): bool => is_array($project) && $this->hasAnyValue($project, [
+                        'period_from',
+                        'period_to',
+                        'is_current',
+                        'name',
+                        'description',
+                        'role',
+                        'role_custom',
+                        'team',
+                        'processes',
+                        'technologies',
+                    ]),
+                ));
+
+                return $this->hasAnyValue($company, [
+                    'name',
+                    'employment_type',
+                    'employment_type_custom',
+                    'is_current',
+                    'period_from',
+                    'period_to',
+                    'industry',
+                    'established',
+                    'capital',
+                    'employees',
+                    'projects',
+                ]) ? $company : null;
+            }, (array) $input['companies']), fn(mixed $company): bool => is_array($company)));
+        }
+
+        $this->merge($input);
+    }
+
+    private function hasAnyValue(array $values, array $keys): bool
+    {
+        foreach ($keys as $key) {
+            $value = $values[$key] ?? null;
+
+            if (is_array($value) && $value !== []) {
+                return true;
+            }
+
+            if (! is_array($value) && trim((string) $value) !== '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function withValidator(\Illuminate\Validation\Validator $validator): void
     {
         $validator->after(function (\Illuminate\Validation\Validator $validator): void {

@@ -17,10 +17,10 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
-        host: "localhost",
+        host: "127.0.0.1",
         port: 5173,
         hmr: {
-            host: "localhost",
+            host: "127.0.0.1",
             port: 5173,
         },
         watch: {

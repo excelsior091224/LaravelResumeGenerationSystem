@@ -28,6 +28,16 @@
 
                 <form method="POST" action="{{ route('resume.preview') }}" @submit="syncForm($event)">
                     @csrf
+                    @if ($errors->any())
+                        <div class="validation-summary" role="alert">
+                            <strong>入力内容を確認してください</strong>
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <section class="section-card">
                         {{-- 基本情報は職務経歴書のヘッダーへ表示する。 --}}
                         <div class="section-heading">
@@ -334,8 +344,10 @@
                         </div>
                     </section>
                     <div class="form-actions"><button type="button" class="btn btn-secondary"
-                            @click="window.print()">プレビューを印刷</button><button type="submit"
-                            class="btn btn-primary">内容を確認する →</button></div>
+                            @click="window.print()">プレビューを印刷</button><button type="submit" class="btn btn-secondary"
+                            formaction="{{ route('resume.download.pdf') }}">PDFをダウンロード</button><button type="submit"
+                            class="btn btn-secondary"
+                            formaction="{{ route('resume.download.docx') }}">DOCXをダウンロード</button></div>
                 </form>
             </section>
 
