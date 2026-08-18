@@ -30,7 +30,7 @@ Laravelで入力したITエンジニア向け職務経歴書を、画面プレ�
 
 - ライブラリ: `dompdf/dompdf`
 - PDF専用テンプレート: [src/resources/views/resume/document.blade.php](../../src/resources/views/resume/document.blade.php)
-- 共通帳票パーツ: [src/resources/views/resume/_paper.blade.php](../../src/resources/views/resume/_paper.blade.php)
+- 共通帳票パーツ: [src/resources/views/resume/\_paper.blade.php](../../src/resources/views/resume/_paper.blade.php)
 - 生成サービス: [src/app/Services/Document/ResumePdfGenerator.php](../../src/app/Services/Document/ResumePdfGenerator.php)
 - ルート: `POST /resume/download/pdf`
 

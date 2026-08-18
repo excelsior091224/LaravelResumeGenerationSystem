@@ -105,7 +105,8 @@
                     <p class="project-detail"><b>【使用技術・DB・OS】</b><br>{{ $project['technologies'] ?? '' }}</p>
                     <p class="project-detail">
                         <b>【組織・役割】</b><br>{{ ($project['role'] ?? '') === 'その他' ? $project['role_custom'] ?? '' : $project['role'] ?? '' }}
-                        / {{ $project['team'] ?? '' }}</p>
+                        / {{ $project['team'] ?? '' }}
+                    </p>
                 </div>
             @endforeach
         </div>
