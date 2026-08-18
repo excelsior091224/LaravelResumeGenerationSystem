@@ -3,6 +3,7 @@
 namespace App\Services\Document;
 
 use App\ResumeData;
+use App\Support\DocxTextFormatter;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\SimpleType\Jc;
@@ -11,7 +12,7 @@ final class ResumeDocxGenerator
 {
     public function generate(ResumeData $resume): string
     {
-        $data = $resume->toArray();
+        $data = $this->formatTextValues($resume->toArray());
         $word = new PhpWord();
         $word->setDefaultFontName('IPAexGothic');
         $word->setDefaultFontSize(10);
@@ -105,6 +106,7 @@ final class ResumeDocxGenerator
             'alignment' => Jc::START,
             'spaceBefore' => 180,
             'spaceAfter' => 80,
+            'keepNext' => true,
             'borderBottomSize' => 8,
             'borderBottomColor' => '20252A',
         ]);
@@ -113,8 +115,27 @@ final class ResumeDocxGenerator
     private function addMultilineText(object $container, string $text, array $fontStyle = [], array $paragraphStyle = []): void
     {
         $lines = preg_split('/\r\n|\r|\n/', $text) ?: [''];
+        $run = $container->addTextRun($paragraphStyle);
+
         foreach ($lines as $index => $line) {
-            $container->addText($line, array_merge(['name' => 'IPAexGothic', 'color' => '20252A'], $fontStyle), $index === array_key_last($lines) ? $paragraphStyle : ['keepNext' => true]);
+            if ($index > 0) {
+                $run->addTextBreak();
+            }
+
+            $run->addText($line, array_merge(['name' => 'IPAexGothic', 'color' => '20252A'], $fontStyle));
         }
+    }
+
+    private function formatTextValues(mixed $value): mixed
+    {
+        if (is_string($value)) {
+            return DocxTextFormatter::format($value);
+        }
+
+        if (is_array($value)) {
+            return array_map(fn(mixed $item): mixed => $this->formatTextValues($item), $value);
+        }
+
+        return $value;
     }
 }

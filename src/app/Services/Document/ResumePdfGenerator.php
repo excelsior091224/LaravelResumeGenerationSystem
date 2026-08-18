@@ -12,7 +12,8 @@ final class ResumePdfGenerator
     public function generate(ResumeData $resume): string
     {
         $data = $resume->toArray();
-        $data['summary'] = PdfSummaryFormatter::format($data['summary'] ?? '');
+        $data['summary_html'] = PdfSummaryFormatter::toHtml($data['summary'] ?? '');
+        $data['self_pr_html'] = PdfSummaryFormatter::toHtml($data['self_pr'] ?? '');
 
         $options = new Options();
         $options->set('defaultFont', 'IPAexGothic');

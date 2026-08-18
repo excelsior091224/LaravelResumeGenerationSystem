@@ -84,10 +84,11 @@
             line-height: 1.65;
             letter-spacing: 0;
             word-spacing: 0;
-            word-break: normal;
-            overflow-wrap: anywhere;
-            line-break: strict;
-            white-space: normal;
+            white-space: pre-wrap;
+        }
+
+        .nowrap {
+            white-space: nowrap;
         }
 
         .paper-section ul {
@@ -123,7 +124,6 @@
 
         .company-block {
             margin-bottom: 8pt;
-            page-break-inside: avoid;
         }
 
         .company-title {
@@ -137,7 +137,6 @@
         .project-block {
             padding: 5pt 0 6pt 5pt;
             border-bottom: 0.5pt solid #aeb4b2;
-            page-break-inside: avoid;
         }
 
         .project-title {

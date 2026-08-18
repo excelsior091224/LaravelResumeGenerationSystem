@@ -5,7 +5,11 @@
 
 <div class="paper-section">
     <h3>■ 職務要約</h3>
-    <p class="summary-text">{{ $resume['summary'] ?? '' }}</p>
+    <p class="summary-text">
+        @if (isset($resume['summary_html']))
+            {!! $resume['summary_html'] !!}@else{{ $resume['summary'] ?? '' }}
+        @endif
+    </p>
 </div>
 <div class="paper-section">
     <h3>■ 得意業務</h3>
@@ -131,5 +135,9 @@
 </div>
 <div class="paper-section">
     <h3>■ 自己PR</h3>
-    <p>{{ $resume['self_pr'] ?? '' }}</p>
+    <p>
+        @if (isset($resume['self_pr_html']))
+            {!! $resume['self_pr_html'] !!}@else{{ $resume['self_pr'] ?? '' }}
+        @endif
+    </p>
 </div>

@@ -164,3 +164,65 @@ php -l app/Services/Document/ResumePdfGenerator.php
 - [pdf-output-strategy.md](pdf-output-strategy.md)
 - [2026-08-18-progress-summary.md](2026-08-18-progress-summary.md)
 - [2026-08-16-progress-summary.md](2026-08-16-progress-summary.md)
+
+## 11. DOCXレイアウト修正
+
+DOCXで改行ごとに独立した段落を生成していたため、Wordのページ分割が不自然になり、生成時間や表示結果にも影響していた。
+
+- 複数行テキストを1段落内のWord改行`w:br`として生成
+- 行ごとの`keepNext`を廃止
+- 見出しだけを次の本文へつなぐ`keepNext`を設定
+- DOCX生成テストで`w:br`を確認
+
+最終検証結果: 10 tests passed / 42 assertions、`npm run build`成功。
+
+## 12. 長文データの自動検証
+
+手入力による確認を不要にするため、長文の職務要約、スキル備考、プロジェクト説明、担当工程、資格、自己PR、リンクを含むFixtureテストを追加した。
+
+- PDF生成前にテキスト項目を再帰的に整形
+- 職務経歴やスキル項目にも、語句内改行防止と入力改行保持のルールを適用
+- 長文FixtureをPDFとDOCXの両ルートへ送信
+- PDF/DOCXの正常なバイナリレスポンスを自動確認
+
+最終検証結果: 11 tests passed / 48 assertions、`npm run build`成功。
+
+## 13. 大容量職務経歴Fixture
+
+少量データだけではページ分割や表の崩れを検出できないため、テストFixtureを拡張した。
+
+- 企業: 4社
+- プロジェクト: 20件
+- スキル: 12件
+- 資格: 10件
+- 技術系リンク: 5件
+- 複数行の職務要約、案件説明、担当工程、スキル備考、自己PR
+
+このFixtureをPDFとDOCXの両方へ送信するテストを追加し、確認用ファイルも更新した。
+
+- [大容量PDF](../src/storage/app/test-output/resume-fixture.pdf)
+- [大容量DOCX](../src/storage/app/test-output/resume-fixture.docx)
+
+検証結果: 14 tests passed / 62 assertions。
+
+## 14. 大容量PDFの異常な空白修正
+
+大容量FixtureのPDFで、会社ブロック全体に`page-break-inside: avoid`が設定されていたため、複数案件を含む会社を次ページへ丸ごと送る大きな空白が発生していた。
+
+- 会社ブロックの改ページ禁止を削除
+- プロジェクト単位の`page-break-inside: avoid`だけを維持
+- PDFテンプレートの重複・断片化していたCSSを単一の定義へ整理
+- 大量データの確認用PDFを再生成
+
+検証結果: 14 tests passed / 63 assertions、`npm run build`成功。
+
+## 15. 案件単位の改ページ抑制を削除
+
+大容量PDFで案件ブロックがページ途中に収まらない場合、案件単位の`page-break-inside: avoid`が空白を作っていたため、この指定も削除した。
+
+- 会社単位の改ページ抑制を削除済み
+- 案件単位の改ページ抑制も削除
+- すべての案件がページ境界をまたいで連続表示される
+- 大容量Fixture PDFを再生成して確認
+
+検証結果: 14 tests passed / 63 assertions。
