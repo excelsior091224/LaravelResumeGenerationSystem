@@ -93,7 +93,7 @@ npm run build
 
 ## 残課題
 
-- AI要約API連携（Google Gemini API、`gemini-2.5-flash-lite`を初期モデルとして採用）
+- AI要約API連携（Google Gemini API、`gemini-3.5-flash-lite`を初期モデルとして採用）
 - LibreOffice環境でDOCXの見た目を確認
 - 正式な職務経歴書様式との細部比較
 
