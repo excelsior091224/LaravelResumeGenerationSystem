@@ -135,13 +135,7 @@ window.resumeForm = (skillData, roleData) => ({
     renderPreview() {
         // 入力中の状態から帳票レイアウト用HTMLを組み立てる。
         const r = this.resume;
-        const date = r.as_of_date
-            ? new Date(`${r.as_of_date}T00:00:00`).toLocaleDateString("ja-JP", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-              })
-            : "";
+        const date = r.as_of_date || "";
         // 入力順に左右されないようカテゴリごとにまとめ、同じカテゴリの行を連続させる。
         const skillGroups = this.resume.skills
             .filter(
@@ -179,10 +173,7 @@ window.resumeForm = (skillData, roleData) => ({
                 const projects = [...company.projects].sort((a, b) =>
                     (b.period_from || "").localeCompare(a.period_from || ""),
                 );
-                const companyPeriod = [
-                    company.period_from,
-                    company.is_current ? "現在" : company.period_to,
-                ]
+                const companyPeriod = [company.period_from, company.period_to]
                     .filter(Boolean)
                     .join("〜");
                 const companyMeta = [
@@ -200,32 +191,30 @@ window.resumeForm = (skillData, roleData) => ({
                     .map((project) => {
                         const projectPeriod = [
                             project.period_from,
-                            project.is_current ? "現在" : project.period_to,
+                            project.period_to,
                         ]
                             .filter(Boolean)
                             .join("〜");
-                        return `<div class="project-block"><p class="project-title">■ ${this.escape(project.name || "プロジェクト名未入力")}（${this.escape(projectPeriod)}）</p><p class="project-detail">${this.lines(project.description || "業務内容を入力してください")}</p>${project.processes ? `<p class="project-detail"><b>【担当工程】</b><br>${this.lines(project.processes)}</p>` : ""}${project.technologies ? `<p class="project-detail"><b>【使用技術・DB・OS】</b><br>${this.lines(project.technologies)}</p>` : ""}<p class="project-detail"><b>【組織・役割】</b><br>${this.lines(this.displayRole(project))} / ${this.lines(project.team)}</p></div>`;
+                        return `<div class="project-block"><p class="project-title">■ ${this.escape(project.name || "")}（${this.escape(projectPeriod)}）</p><p class="project-detail">${this.lines(project.description || "")}</p><p class="project-detail"><b>【担当工程】</b><br>${this.lines(project.processes || "")}</p><p class="project-detail"><b>【使用技術・DB・OS】</b><br>${this.lines(project.technologies || "")}</p><p class="project-detail"><b>【組織・役割】</b><br>${this.lines(this.displayRole(project))} / ${this.lines(project.team)}</p></div>`;
                     })
                     .join("")}</div>`;
             })
             .join("");
-        const certifications =
-            this.resume.certifications
-                .filter((item) => item.name)
-                .map(
-                    (item) =>
-                        `<li>${this.escape(item.date)}　${this.escape(item.name)}</li>`,
-                )
-                .join("") ||
-            '<li class="empty-note">資格を入力してください</li>';
+        const certifications = this.resume.certifications
+            .filter((item) => item.name)
+            .map(
+                (item) =>
+                    `<li>${this.escape(item.date)}　${this.escape(item.name)}</li>`,
+            )
+            .join("");
         const links = this.resume.links
             .filter((link) => link.url && this.safeLinkUrl(link.url))
             .map((link) => {
                 const safeUrl = this.safeLinkUrl(link.url);
-                return `<li><span>${this.escape(this.displayLinkType(link))}：</span><a href="${this.escape(safeUrl)}" target="_blank" rel="noreferrer">${this.escape(safeUrl)}</a></li>`;
+                return `<li><span>${this.escape(this.displayLinkType(link))}：</span>${this.escape(safeUrl)}</li>`;
             })
             .join("");
-        return `<div class="paper-header"><h2>職務経歴書</h2><div class="paper-meta">${date}<br><b>氏名：${this.escape(r.full_name || "未入力")}</b></div></div><div class="paper-section"><h3>■ 職務要約</h3><p>${this.lines(r.summary || "職務要約を入力してください")}</p></div><div class="paper-section"><h3>■ 得意業務</h3><p>・ ${this.escape(r.specialty || "得意業務を入力してください")}</p></div><div class="paper-section"><h3>■ 技術系アカウント・ポートフォリオ</h3>${links ? `<ul>${links}</ul>` : '<p class="empty-note">技術系アカウントやポートフォリオを入力してください</p>'}</div><div class="paper-section"><h3>■ PCスキル / テクニカルスキル</h3><table class="paper-table"><thead><tr><th>カテゴリ</th><th>スキル</th><th>経験年数</th><th>経験区分</th><th>備考</th></tr></thead><tbody>${skillRows}</tbody></table></div><div class="paper-section"><h3>■ 職務経歴</h3>${projects || '<p class="empty-note">所属企業とプロジェクトを入力してください</p>'}</div><div class="paper-columns"><div class="paper-section"><h3>■ 資格</h3><ul>${certifications}</ul></div><div class="paper-section"><h3>■ 自己PR</h3><p>${this.lines(r.self_pr || "自己PRを入力してください")}</p></div></div>`;
+        return `<div class="paper-header"><h2>職務経歴書</h2><div class="paper-meta">${this.escape(date)}<br><b>氏名：${this.escape(r.full_name || "")}</b></div></div><div class="paper-section"><h3>■ 職務要約</h3><p class="summary-text">${this.lines(r.summary || "")}</p></div><div class="paper-section"><h3>■ 得意業務</h3><p>・ ${this.escape(r.specialty || "")}</p></div><div class="paper-section"><h3>■ 技術系アカウント・ポートフォリオ</h3>${links ? `<ul>${links}</ul>` : '<p class="empty-note">技術系アカウントやポートフォリオを入力してください</p>'}</div><div class="paper-section"><h3>■ PCスキル / テクニカルスキル</h3><table class="paper-table"><thead><tr><th>カテゴリ</th><th>スキル</th><th>経験年数</th><th>経験区分</th><th>備考</th></tr></thead><tbody>${skillRows}</tbody></table></div><div class="paper-section"><h3>■ 職務経歴</h3>${projects || '<p class="empty-note">所属企業とプロジェクトを入力してください</p>'}</div><div class="paper-section"><h3>■ 資格</h3>${certifications ? `<ul>${certifications}</ul>` : '<p class="empty-note">資格を入力してください</p>'}</div><div class="paper-section"><h3>■ 自己PR</h3><p>${this.lines(r.self_pr || "")}</p></div>`;
     },
 });
 

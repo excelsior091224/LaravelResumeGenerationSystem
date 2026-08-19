@@ -93,7 +93,14 @@ npm run build
 
 ## 残課題
 
-- ライブプレビューとサーバー側プレビューの完全なテンプレート共有
 - AI要約API連携
-- 実際のWord/LibreOffice環境でDOCXの見た目を確認
+- LibreOffice環境でDOCXの見た目を確認
 - 正式な職務経歴書様式との細部比較
+
+ライブプレビューとサーバー側プレビューの帳票構造共有は、`resources/js/resume-form.js` を共通帳票の項目順・表示内容に合わせることで対応済み。
+
+## Word実環境確認
+
+- 生成したDOCXをMicrosoft Wordで開き、WordのPDF変換機能でPDF化して確認済み
+- 改ページ、日本語フォント、表、複数行テキスト、案件ブロックの表示に問題なし
+- 添付確認資料: `resume-fixture.docx` をWordでPDF化した6ページの出力
