@@ -7,11 +7,7 @@ services:
     working_dir: /workspaces/LaravelResumeGenerationSystem/src
     volumes:
       - .:/workspaces/LaravelResumeGenerationSystem
-    command: >
-      sh -c "/usr/local/bin/install-laravel.sh
-      && cd /workspaces/LaravelResumeGenerationSystem/src
-      && php artisan migrate --force --no-interaction
-      && exec apache2-foreground"
+    command: apache2-foreground
     ports:
       - "127.0.0.1:8000:80"
     extra_hosts:
