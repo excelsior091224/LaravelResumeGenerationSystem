@@ -93,8 +93,6 @@ npm run build
 
 ## 残課題
 
-- AI要約API連携（Google Gemini API、`gemini-3.5-flash-lite`を初期モデルとして採用）
-- LibreOffice環境でDOCXの見た目を確認
 - 正式な職務経歴書様式との細部比較
 
 ライブプレビューとサーバー側プレビューの帳票構造共有は、`resources/js/resume-form.js` を共通帳票の項目順・表示内容に合わせることで対応済み。
@@ -104,3 +102,9 @@ npm run build
 - 生成したDOCXをMicrosoft Wordで開き、WordのPDF変換機能でPDF化して確認済み
 - 改ページ、日本語フォント、表、複数行テキスト、案件ブロックの表示に問題なし
 - 添付確認資料: `resume-fixture.docx` をWordでPDF化した6ページの出力
+
+## LibreOffice実環境確認
+
+- 生成したDOCXをLibreOfficeで開き、PDF変換した8ページの大容量出力を確認済み
+- 日本語フォント、罫線、表、複数行テキスト、改ページ、案件ブロック、資格、自己PR、配慮事項、末尾文の表示に問題なし
+- スキル表の継続ページではヘッダーを繰り返さないが、実用上の表示問題はない
