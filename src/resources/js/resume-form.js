@@ -23,6 +23,7 @@ const blankCompany = () => ({
     period_to: "",
     is_current: false,
     industry: "",
+    business_overview: "",
     established: "",
     capital: "",
     employees: "",
@@ -47,6 +48,19 @@ const blankLink = () => ({
     type_custom: "",
     url: "",
 });
+const blankResume = () => ({
+    full_name: "",
+    as_of_date: new Date().toISOString().slice(0, 10),
+    links: [blankLink()],
+    summary: "",
+    specialty: "",
+    self_pr: "",
+    considerations: "",
+    skills: [blankSkill()],
+    companies: [blankCompany()],
+    certifications: [blankCertification()],
+});
+const draftStorageKey = "resume-foundry-draft-v1";
 
 window.resumeForm = (skillData, roleData) => ({
     // PHPから受け取ったカテゴリ別スキルを候補表示用の配列へ変換する。
@@ -55,19 +69,52 @@ window.resumeForm = (skillData, roleData) => ({
         ...category,
     })),
     roleGroups: roleData,
-    resume: {
-        full_name: "",
-        as_of_date: new Date().toISOString().slice(0, 10),
-        links: [blankLink()],
-        summary: "",
-        specialty: "",
-        self_pr: "",
-        skills: [blankSkill()],
-        companies: [blankCompany()],
-        certifications: [blankCertification()],
+    aiConsent: false,
+    summaryLoading: false,
+    summaryError: "",
+    resume: blankResume(),
+    init() {
+        const draft = this.loadDraft();
+        if (draft) {
+            this.resume = draft;
+        }
+
+        this.$watch("resume", () => this.saveDraft());
     },
     addSkill() {
         this.resume.skills.push(blankSkill());
+    },
+    skillOptions(categoryLabel) {
+        return (
+            this.categories.find((category) => category.label === categoryLabel)
+                ?.skills || []
+        );
+    },
+    selectSkillCategory(skill) {
+        skill.name = "";
+        if (skill.category === "担当業務") {
+            skill.level = "";
+        }
+    },
+    normalizeSkill(skill) {
+        const normalized = {
+            ...blankSkill(),
+            ...skill,
+            id: skill.id || crypto.randomUUID(),
+        };
+
+        if (
+            normalized.category === "担当業務" &&
+            normalized.name &&
+            !this.skillOptions(normalized.category).includes(normalized.name)
+        ) {
+            normalized.name = "";
+        }
+        if (normalized.category === "担当業務") {
+            normalized.level = "";
+        }
+
+        return normalized;
     },
     addCompany() {
         this.resume.companies.push(blankCompany());
@@ -90,7 +137,210 @@ window.resumeForm = (skillData, roleData) => ({
     removeItem(collection, index) {
         this.resume[collection].splice(index, 1);
     },
+    loadDraft() {
+        try {
+            const draft = JSON.parse(localStorage.getItem(draftStorageKey));
+            if (!draft || typeof draft !== "object") {
+                return null;
+            }
+
+            return {
+                ...blankResume(),
+                ...draft,
+                links:
+                    Array.isArray(draft.links) && draft.links.length
+                        ? draft.links.map((link) => ({
+                              ...blankLink(),
+                              ...link,
+                              id: link.id || crypto.randomUUID(),
+                          }))
+                        : [blankLink()],
+                skills:
+                    Array.isArray(draft.skills) && draft.skills.length
+                        ? draft.skills.map((skill) =>
+                              this.normalizeSkill(skill),
+                          )
+                        : [blankSkill()],
+                companies:
+                    Array.isArray(draft.companies) && draft.companies.length
+                        ? draft.companies.map((company) => ({
+                              ...blankCompany(),
+                              ...company,
+                              id: company.id || crypto.randomUUID(),
+                              projects:
+                                  Array.isArray(company.projects) &&
+                                  company.projects.length
+                                      ? company.projects.map((project) => ({
+                                            ...blankProject(),
+                                            ...project,
+                                            id:
+                                                project.id ||
+                                                crypto.randomUUID(),
+                                        }))
+                                      : [blankProject()],
+                          }))
+                        : [blankCompany()],
+                certifications:
+                    Array.isArray(draft.certifications) &&
+                    draft.certifications.length
+                        ? draft.certifications.map((certification) => ({
+                              ...blankCertification(),
+                              ...certification,
+                              id: certification.id || crypto.randomUUID(),
+                          }))
+                        : [blankCertification()],
+            };
+        } catch {
+            return null;
+        }
+    },
+    saveDraft() {
+        try {
+            localStorage.setItem(draftStorageKey, JSON.stringify(this.resume));
+        } catch {
+            // ブラウザの保存領域が使えない場合も、入力自体は継続できる。
+        }
+    },
+    clearDraft() {
+        if (
+            !window.confirm("この端末に保存した入力中の下書きを削除しますか？")
+        ) {
+            return;
+        }
+
+        localStorage.removeItem(draftStorageKey);
+        this.resume = blankResume();
+        this.aiConsent = false;
+        this.summaryError = "";
+    },
     syncForm() {},
+    hasAnyValue(item, fields) {
+        return fields.some((field) => {
+            const value = item[field];
+            return Array.isArray(value)
+                ? value.length > 0
+                : String(value || "").trim() !== "";
+        });
+    },
+    summaryCareerData() {
+        const companies = this.resume.companies
+            .map((company) => {
+                const projects = company.projects
+                    .filter((project) =>
+                        this.hasAnyValue(project, [
+                            "name",
+                            "period_from",
+                            "period_to",
+                            "description",
+                            "role",
+                            "role_custom",
+                            "team",
+                            "processes",
+                            "technologies",
+                        ]),
+                    )
+                    .map(
+                        ({
+                            name,
+                            period_from,
+                            period_to,
+                            description,
+                            role,
+                            role_custom,
+                            team,
+                            processes,
+                            technologies,
+                        }) => ({
+                            name,
+                            period_from,
+                            period_to,
+                            description,
+                            role,
+                            role_custom,
+                            team,
+                            processes,
+                            technologies,
+                        }),
+                    );
+
+                return {
+                    name: company.name,
+                    employment_type: company.employment_type,
+                    employment_type_custom: company.employment_type_custom,
+                    period_from: company.period_from,
+                    period_to: company.period_to,
+                    industry: company.industry,
+                    business_overview: company.business_overview,
+                    projects,
+                };
+            })
+            .filter((company) =>
+                this.hasAnyValue(company, [
+                    "name",
+                    "employment_type",
+                    "employment_type_custom",
+                    "period_from",
+                    "period_to",
+                    "industry",
+                    "business_overview",
+                    "projects",
+                ]),
+            );
+        const skills = this.resume.skills.filter((skill) =>
+            this.hasAnyValue(skill, [
+                "category",
+                "name",
+                "years",
+                "level",
+                "note",
+            ]),
+        );
+        const certifications = this.resume.certifications.filter(
+            (certification) =>
+                this.hasAnyValue(certification, ["date", "name"]),
+        );
+
+        return { companies, skills, certifications };
+    },
+    async generateSummary() {
+        if (!this.aiConsent || this.summaryLoading) {
+            return;
+        }
+
+        this.summaryLoading = true;
+        this.summaryError = "";
+
+        try {
+            const response = await fetch("/resume/summary", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                },
+                body: JSON.stringify({
+                    ai_consent: true,
+                    ...this.summaryCareerData(),
+                }),
+            });
+            const payload = await response.json();
+
+            if (!response.ok || !payload.summary) {
+                throw new Error(
+                    payload.message || "職務要約を生成できませんでした。",
+                );
+            }
+
+            this.resume.summary = payload.summary;
+        } catch (error) {
+            this.summaryError =
+                error.message || "職務要約を生成できませんでした。";
+        } finally {
+            this.summaryLoading = false;
+        }
+    },
     // ユーザー入力をHTMLへ埋め込む前にエスケープし、XSSを防ぐ。
     escape(value) {
         return String(value || "").replace(
@@ -121,6 +371,11 @@ window.resumeForm = (skillData, roleData) => ({
     },
     displayLinkType(link) {
         return link.type === "その他" ? link.type_custom : link.type;
+    },
+    displayMonth(value) {
+        return /^\d{4}-\d{2}$/.test(value || "")
+            ? `${value.replace("-", "年")}月`
+            : value || "";
     },
     safeLinkUrl(url) {
         try {
@@ -169,10 +424,37 @@ window.resumeForm = (skillData, roleData) => ({
             (b.period_from || "").localeCompare(a.period_from || ""),
         );
         const projects = companies
+            .filter((company) =>
+                this.hasAnyValue(company, [
+                    "name",
+                    "employment_type",
+                    "period_from",
+                    "period_to",
+                    "industry",
+                    "business_overview",
+                    "projects",
+                ]),
+            )
             .map((company) => {
-                const projects = [...company.projects].sort((a, b) =>
-                    (b.period_from || "").localeCompare(a.period_from || ""),
-                );
+                const projects = company.projects
+                    .filter((project) =>
+                        this.hasAnyValue(project, [
+                            "name",
+                            "period_from",
+                            "period_to",
+                            "description",
+                            "role",
+                            "role_custom",
+                            "team",
+                            "processes",
+                            "technologies",
+                        ]),
+                    )
+                    .sort((a, b) =>
+                        (b.period_from || "").localeCompare(
+                            a.period_from || "",
+                        ),
+                    );
                 const companyPeriod = [company.period_from, company.period_to]
                     .filter(Boolean)
                     .join("〜");
@@ -187,7 +469,7 @@ window.resumeForm = (skillData, roleData) => ({
                 ]
                     .filter(Boolean)
                     .join(" / ");
-                return `<div class="company-block"><p class="company-title">勤務先：${this.escape(this.displayCompanyName(company))}（${this.escape(companyPeriod)}）</p>${companyMeta ? `<p class="project-detail">${this.escape(companyMeta)}</p>` : ""}${projects
+                return `<div class="company-block"><p class="company-title">勤務先：${this.escape(this.displayCompanyName(company))}（${this.escape(companyPeriod)}）</p>${companyMeta ? `<p class="project-detail">${this.escape(companyMeta)}</p>` : ""}${company.business_overview ? `<p class="project-detail"><b>【業務概要】</b><br>${this.lines(company.business_overview)}</p>` : ""}${projects
                     .map((project) => {
                         const projectPeriod = [
                             project.period_from,
@@ -204,7 +486,7 @@ window.resumeForm = (skillData, roleData) => ({
             .filter((item) => item.name)
             .map(
                 (item) =>
-                    `<li>${this.escape(item.date)}　${this.escape(item.name)}</li>`,
+                    `<li>${this.escape(this.displayMonth(item.date))}　${this.escape(item.name)}</li>`,
             )
             .join("");
         const links = this.resume.links
@@ -214,7 +496,7 @@ window.resumeForm = (skillData, roleData) => ({
                 return `<li><span>${this.escape(this.displayLinkType(link))}：</span>${this.escape(safeUrl)}</li>`;
             })
             .join("");
-        return `<div class="paper-header"><h2>職務経歴書</h2><div class="paper-meta">${this.escape(date)}<br><b>氏名：${this.escape(r.full_name || "")}</b></div></div><div class="paper-section"><h3>■ 職務要約</h3><p class="summary-text">${this.lines(r.summary || "")}</p></div><div class="paper-section"><h3>■ 得意業務</h3><p>・ ${this.escape(r.specialty || "")}</p></div><div class="paper-section"><h3>■ 技術系アカウント・ポートフォリオ</h3>${links ? `<ul>${links}</ul>` : '<p class="empty-note">技術系アカウントやポートフォリオを入力してください</p>'}</div><div class="paper-section"><h3>■ PCスキル / テクニカルスキル</h3><table class="paper-table"><thead><tr><th>カテゴリ</th><th>スキル</th><th>経験年数</th><th>経験区分</th><th>備考</th></tr></thead><tbody>${skillRows}</tbody></table></div><div class="paper-section"><h3>■ 職務経歴</h3>${projects || '<p class="empty-note">所属企業とプロジェクトを入力してください</p>'}</div><div class="paper-section"><h3>■ 資格</h3>${certifications ? `<ul>${certifications}</ul>` : '<p class="empty-note">資格を入力してください</p>'}</div><div class="paper-section"><h3>■ 自己PR</h3><p>${this.lines(r.self_pr || "")}</p></div>`;
+        return `<div class="paper-header"><h2>職務経歴書</h2><div class="paper-meta">${this.escape(date)}<br><b>氏名：${this.escape(r.full_name || "")}</b></div></div><div class="paper-section"><h3>■ 職務要約</h3><p class="summary-text">${this.lines(r.summary || "")}</p></div><div class="paper-section"><h3>■ 得意業務</h3><p>・ ${this.escape(r.specialty || "")}</p></div><div class="paper-section"><h3>■ 技術系アカウント・ポートフォリオ</h3>${links ? `<ul>${links}</ul>` : '<p class="empty-note">技術系アカウントやポートフォリオを入力してください</p>'}</div><div class="paper-section"><h3>■ PCスキル / テクニカルスキル</h3><table class="paper-table"><thead><tr><th>カテゴリ</th><th>スキル</th><th>経験年数</th><th>経験区分</th><th>備考</th></tr></thead><tbody>${skillRows}</tbody></table></div><div class="paper-section"><h3>■ 職務経歴</h3>${projects || '<p class="empty-note">所属企業とプロジェクトを入力してください</p>'}</div><div class="paper-section"><h3>■ 資格</h3>${certifications ? `<ul>${certifications}</ul>` : '<p class="empty-note">資格を入力してください</p>'}</div><div class="paper-section"><h3>■ 自己PR</h3><p>${this.lines(r.self_pr || "")}</p></div>${r.considerations ? `<div class="paper-section"><h3>■ 配慮事項</h3><p>${this.lines(r.considerations)}</p></div>` : ""}<div class="paper-closing"><p class="paper-closing-end">以上</p><p class="paper-closing-message">是非、面接の機会をいただければと思います。何卒よろしくお願いいたします。</p></div>`;
     },
 });
 

@@ -79,6 +79,22 @@
             line-break: strict;
         }
 
+        .paper-closing {
+            margin-top: 14pt;
+        }
+
+        .paper-closing p {
+            margin: 0;
+        }
+
+        .paper-closing-end {
+            text-align: right;
+        }
+
+        .paper-closing-message {
+            text-align: center;
+        }
+
         .paper-section .summary-text {
             font-size: 9pt;
             line-height: 1.65;

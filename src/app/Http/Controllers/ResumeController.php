@@ -3,10 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GenerateResumeRequest;
+use App\Http\Requests\GenerateResumeSummaryRequest;
 use App\ResumeData;
 use App\Services\Document\ResumeDocxGenerator;
 use App\Services\Document\ResumePdfGenerator;
+use App\Services\ResumeSummaryProvider;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
 class ResumeController extends Controller
@@ -36,6 +42,22 @@ class ResumeController extends Controller
         $resume = ResumeData::fromArray($request->validated());
 
         return view('resume.preview', ['resume' => $resume->toArray()]);
+    }
+
+    public function summarize(GenerateResumeSummaryRequest $request, ResumeSummaryProvider $provider): JsonResponse
+    {
+        $careerData = $request->careerData();
+        if (empty($careerData['companies']) && empty($careerData['skills']) && empty($careerData['certifications'])) {
+            return response()->json(['message' => '職歴、スキル、資格のいずれかを入力してください。'], 422);
+        }
+
+        try {
+            return response()->json(['summary' => $provider->summarize($careerData)]);
+        } catch (ConnectionException | RequestException) {
+            return response()->json(['message' => 'AI要約サービスに接続できませんでした。時間をおいて再試行してください。'], 503);
+        } catch (RuntimeException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
     }
 
     public function downloadPdf(GenerateResumeRequest $request, ResumePdfGenerator $generator): Response

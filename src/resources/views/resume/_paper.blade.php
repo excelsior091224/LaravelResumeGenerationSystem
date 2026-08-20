@@ -99,6 +99,9 @@
                     {{ collect([($company['employment_type'] ?? '') === 'その他' ? $company['employment_type_custom'] ?? '' : $company['employment_type'] ?? '', $company['industry'] ?? '', $company['established'] ?? '' ? '設立：' . $company['established'] : null, $company['capital'] ?? '' ? '資本金：' . $company['capital'] : null, $company['employees'] ?? '' ? '従業員数：' . $company['employees'] : null])->filter()->join(' / ') }}
                 </p>
             @endif
+            @if (!empty($company['business_overview']))
+                <p class="project-detail"><b>【業務概要】</b><br>{{ $company['business_overview'] }}</p>
+            @endif
             @foreach (collect($company['projects'] ?? [])->sortByDesc('period_from')->values() as $project)
                 <div class="project-block">
                     <p class="project-title">■
@@ -125,7 +128,13 @@
         <ul>
             @foreach ($resume['certifications'] as $certification)
                 @if (!empty($certification['name']))
-                    <li>{{ $certification['date'] ?? '' }}　{{ $certification['name'] }}</li>
+                    @php
+                        $certificationDate = $certification['date'] ?? '';
+                        if (preg_match('/^\d{4}-\d{2}$/', $certificationDate)) {
+                            $certificationDate = str_replace('-', '年', $certificationDate) . '月';
+                        }
+                    @endphp
+                    <li>{{ $certificationDate }}　{{ $certification['name'] }}</li>
                 @endif
             @endforeach
         </ul>
@@ -140,4 +149,14 @@
             {!! $resume['self_pr_html'] !!}@else{{ $resume['self_pr'] ?? '' }}
         @endif
     </p>
+</div>
+@if (!empty($resume['considerations']))
+    <div class="paper-section">
+        <h3>■ 配慮事項</h3>
+        <p>{{ $resume['considerations'] }}</p>
+    </div>
+@endif
+<div class="paper-closing">
+    <p class="paper-closing-end">以上</p>
+    <p class="paper-closing-message">是非、面接の機会をいただければと思います。何卒よろしくお願いいたします。</p>
 </div>

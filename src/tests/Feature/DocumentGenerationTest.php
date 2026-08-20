@@ -41,6 +41,11 @@ class DocumentGenerationTest extends TestCase
         $response->assertSee('summary-text');
         $response->assertSee('【担当工程】');
         $response->assertSee('株式会社サンプル');
+        $response->assertSee('【業務概要】');
+        $response->assertSee('配慮事項');
+        $response->assertSee('担当業務');
+        $response->assertSee('要件定義');
+        $response->assertSee('是非、面接の機会をいただければと思います。何卒よろしくお願いいたします。');
         $response->assertDontSee('内容を確認する');
         $response->assertSeeInOrder(['■ 資格', '■ 自己PR']);
     }
@@ -77,6 +82,11 @@ class DocumentGenerationTest extends TestCase
         $this->assertStringContainsString('職務経歴書', $zip->getFromName('word/document.xml'));
         $this->assertStringContainsString('資格', $zip->getFromName('word/document.xml'));
         $this->assertStringContainsString('自己PR', $zip->getFromName('word/document.xml'));
+        $this->assertStringContainsString('業務概要', $zip->getFromName('word/document.xml'));
+        $this->assertStringContainsString('配慮事項', $zip->getFromName('word/document.xml'));
+        $this->assertStringContainsString('担当業務', $zip->getFromName('word/document.xml'));
+        $this->assertStringContainsString('要件定義', $zip->getFromName('word/document.xml'));
+        $this->assertStringContainsString('是非、面接の機会をいただければと思います。何卒よろしくお願いいたします。', $zip->getFromName('word/document.xml'));
         $this->assertStringContainsString('<w:br', $zip->getFromName('word/document.xml'));
         $zip->close();
         unlink($docxPath);
@@ -167,6 +177,7 @@ class DocumentGenerationTest extends TestCase
             ],
             'skills' => [
                 ['category' => '言語', 'name' => 'PHP', 'years' => '5年', 'level' => '業務使用', 'note' => 'Laravelを含む'],
+                ['category' => '担当業務', 'name' => '要件定義', 'years' => '5年', 'level' => '業務使用', 'note' => '利用部門へのヒアリングと要件整理を担当'],
             ],
             'companies' => [
                 [
@@ -174,6 +185,7 @@ class DocumentGenerationTest extends TestCase
                     'employment_type' => '正社員',
                     'period_from' => '2024-04',
                     'period_to' => '2026-03',
+                    'business_overview' => '社内外の業務改善を目的としたWebシステムの企画、開発、運用を担当',
                     'projects' => [
                         [
                             'name' => '業務管理システム',
@@ -192,6 +204,7 @@ class DocumentGenerationTest extends TestCase
                 ['date' => '2025-01', 'name' => '基本情報技術者'],
             ],
             'self_pr' => '利用者の課題を整理し、継続的に改善できます。',
+            'considerations' => '通院などの予定は事前に相談のうえ調整します。',
         ];
     }
 
@@ -214,8 +227,8 @@ class DocumentGenerationTest extends TestCase
         $payload['companies'][0]['projects'][0]['processes'] = "要件整理、基本設計、詳細設計、実装\n単体テスト、結合テスト、運用改善";
         $payload['companies'][0]['projects'][0]['technologies'] = 'PHP8.3 / Laravel / Livewire / MySQL / JavaScript / Docker';
         $payload['certifications'] = [
-            ['date' => '2025年01月', 'name' => '基本情報技術者試験'],
-            ['date' => '2024年06月', 'name' => 'AWS Certified Cloud Practitioner'],
+            ['date' => '2025-01', 'name' => '基本情報技術者試験'],
+            ['date' => '2024-06', 'name' => 'AWS Certified Cloud Practitioner'],
         ];
         $payload['self_pr'] = "【配慮事項】\n曖昧な指示の場合は確認事項を整理し、認識を合わせてから作業を開始します。\n\n◆ GitHub Copilotの活用\nエラー原因の特定やコード補完に活用し、レビュー可能な形で成果物を仕上げます。\n\n◆ 学習姿勢\nLinux、Docker、クラウド技術を継続的に学習し、実務へ還元しています。";
 
@@ -238,14 +251,14 @@ class DocumentGenerationTest extends TestCase
         ]);
 
         $payload['certifications'] = array_merge($payload['certifications'], [
-            ['date' => '2023年10月', 'name' => 'AWS Certified Solutions Architect'],
-            ['date' => '2023年04月', 'name' => 'LPIC-1'],
-            ['date' => '2022年11月', 'name' => 'PHP技術者認定試験'],
-            ['date' => '2022年05月', 'name' => '普通自動車第一種運転免許'],
-            ['date' => '2021年09月', 'name' => '情報セキュリティマネジメント試験'],
-            ['date' => '2020年06月', 'name' => 'MOS Excel Expert'],
-            ['date' => '2019年03月', 'name' => 'ITパスポート試験'],
-            ['date' => '2018年08月', 'name' => '日商簿記検定2級'],
+            ['date' => '2023-10', 'name' => 'AWS Certified Solutions Architect'],
+            ['date' => '2023-04', 'name' => 'LPIC-1'],
+            ['date' => '2022-11', 'name' => 'PHP技術者認定試験'],
+            ['date' => '2022-05', 'name' => '普通自動車第一種運転免許'],
+            ['date' => '2021-09', 'name' => '情報セキュリティマネジメント試験'],
+            ['date' => '2020-06', 'name' => 'MOS Excel Expert'],
+            ['date' => '2019-03', 'name' => 'ITパスポート試験'],
+            ['date' => '2018-08', 'name' => '日商簿記検定2級'],
         ]);
 
         $companies = [];

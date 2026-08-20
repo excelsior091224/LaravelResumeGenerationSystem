@@ -83,13 +83,17 @@
                     </section>
 
                     <section class="section-card">
-                        {{-- AI要約は後続実装に備え、現在は手入力欄として提供する。 --}}
                         <div class="section-heading">
                             <div>
                                 <h2>職務要約・得意業務</h2>
                                 <p>職務経歴の先頭に表示されます</p>
-                            </div><button type="button" class="btn btn-secondary" disabled>AI要約（準備中）</button>
+                            </div><button type="button" class="btn btn-secondary" @click="generateSummary"
+                                :disabled="summaryLoading || !aiConsent"><span
+                                    x-text="summaryLoading ? '生成中...' : '職歴からAI生成'"></span></button>
                         </div>
+                        <label class="checkbox-row"><input type="checkbox"
+                                x-model="aiConsent"><span>職歴、スキル、資格をAIサービスへ送信することに同意します。氏名、URL、自己PRは送信しません。</span></label>
+                        <p class="validation-summary" x-show="summaryError" x-text="summaryError" role="alert"></p>
                         <div class="field"><label for="summary">職務要約</label>
                             <textarea id="summary" name="summary" x-model="resume.summary" placeholder="これまでの経験やキャリアの特徴を入力してください"></textarea>
                         </div>
@@ -114,7 +118,7 @@
                                     <div class="field-grid">
                                         <div class="field"><label>カテゴリ</label><select
                                                 :name="`skills[${index}][category]`" x-model="skill.category"
-                                                @change="skill.name = ''">
+                                                @change="selectSkillCategory(skill)">
                                                 <option value="">選択してください</option><template
                                                     x-for="category in categories" :key="category.key">
                                                     <option :value="category.label" x-text="category.label"></option>
@@ -123,10 +127,12 @@
                                         <div class="field"><label>スキル名</label><input :name="`skills[${index}][name]`"
                                                 x-model="skill.name" :list="`skill-options-${index}`"
                                                 placeholder="例：使用した技術名"></div>
-                                        <div class="field"><label>経験年数</label><input :name="`skills[${index}][years]`"
-                                                x-model="skill.years" placeholder="例：2年"></div>
-                                        <div class="field"><label>経験区分</label><select
-                                                :name="`skills[${index}][level]`" x-model="skill.level">
+                                        <div class="field"><label>経験年数</label><input
+                                                :name="`skills[${index}][years]`" x-model="skill.years"
+                                                placeholder="例：2年"></div>
+                                        <div class="field" x-show="skill.category !== '担当業務'">
+                                            <label>経験区分</label><select :name="`skills[${index}][level]`"
+                                                x-model="skill.level">
                                                 <option value="">選択してください</option>
                                                 <option value="業務使用">業務使用</option>
                                                 <option value="個人開発">個人開発</option>
@@ -140,7 +146,8 @@
                             </template>
                         </div>
                         {{-- 選択中のカテゴリに一致するスキルだけを候補として表示する。 --}}
-                        <template x-for="(skill, index) in resume.skills" :key="`skill-options-${skill.id}`">
+                        <template x-for="(skill, index) in resume.skills"
+                            :key="`skill-options-${skill.id}-${skill.category}`">
                             <datalist :id="`skill-options-${index}`">
                                 <template x-for="category in categories" :key="category.key">
                                     <template x-if="category.label === skill.category">
@@ -210,6 +217,10 @@
                                         <div class="field"><label>事業内容</label><input
                                                 :name="`companies[${companyIndex}][industry]`"
                                                 x-model="company.industry" placeholder="例：ITサービス"></div>
+                                        <div class="field full"><label>業務概要</label>
+                                            <textarea :name="`companies[${companyIndex}][business_overview]`" x-model="company.business_overview"
+                                                placeholder="プロジェクトに分けない、所属中の担当業務や役割の概要を入力してください"></textarea>
+                                        </div>
                                         <div class="field"><label>従業員数</label><input
                                                 :name="`companies[${companyIndex}][employees]`"
                                                 x-model="company.employees" placeholder="例：100名"></div>
@@ -318,9 +329,9 @@
                                             @click="removeItem('certifications', index)"
                                             x-show="resume.certifications.length > 1">削除</button></div>
                                     <div class="field-grid">
-                                        <div class="field"><label>取得年月</label><input
-                                                :name="`certifications[${index}][date]`" x-model="certification.date"
-                                                placeholder="例：2025年10月"></div>
+                                        <div class="field"><label>取得年月</label><input type="month"
+                                                :name="`certifications[${index}][date]`" x-model="certification.date">
+                                        </div>
                                         <div class="field"><label>資格名</label><input
                                                 :name="`certifications[${index}][name]`" x-model="certification.name"
                                                 placeholder="例：取得した資格名"></div>
@@ -343,11 +354,24 @@
                             <textarea name="self_pr" x-model="resume.self_pr" placeholder="自己PRを入力してください"></textarea>
                         </div>
                     </section>
+                    <section class="section-card">
+                        <div class="section-heading">
+                            <div>
+                                <h2>配慮事項</h2>
+                                <p>就業上の配慮が必要な事項を、共有する範囲で記載</p>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <textarea name="considerations" x-model="resume.considerations" placeholder="例：通院、勤務時間、作業環境などに関する配慮事項"></textarea>
+                        </div>
+                    </section>
+                    <p class="draft-note">入力内容はこのブラウザに下書きとして自動保存されます。共有端末では作業後に下書きをクリアしてください。</p>
                     <div class="form-actions"><button type="button" class="btn btn-secondary"
                             @click="window.print()">プレビューを印刷</button><button type="submit" class="btn btn-secondary"
                             formaction="{{ route('resume.download.pdf') }}">PDFをダウンロード</button><button type="submit"
                             class="btn btn-secondary"
-                            formaction="{{ route('resume.download.docx') }}">DOCXをダウンロード</button></div>
+                            formaction="{{ route('resume.download.docx') }}">DOCXをダウンロード</button><button
+                            type="button" class="btn btn-quiet" @click="clearDraft">下書きをクリア</button></div>
                 </form>
             </section>
 

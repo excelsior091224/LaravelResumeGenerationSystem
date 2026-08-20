@@ -20,7 +20,7 @@ class ResumeValidationTest extends TestCase
                 ['type' => 'GitHub', 'url' => 'https://github.com/example'],
             ],
             'skills' => [
-                ['category' => '言語', 'name' => 'PHP', 'years' => '3年', 'level' => '業務使用'],
+                ['category' => '言語', 'name' => 'PHP', 'years' => '3年', 'level' => '業務使用', 'processes' => '要件定義、実装、テスト'],
             ],
             'companies' => [
                 [
@@ -109,6 +109,7 @@ class ResumeValidationTest extends TestCase
             'skills' => [
                 ['category' => 'フレームワーク', 'name' => 'Laravel', 'years' => '3年', 'level' => '業務使用', 'note' => 'API開発'],
                 ['category' => '言語', 'name' => 'PHP', 'years' => '5年', 'level' => '業務使用', 'note' => 'バックエンド'],
+                ['category' => '担当業務', 'name' => '要件定義', 'years' => '5年', 'level' => '業務使用', 'note' => '利用部門へのヒアリングと要件整理'],
             ],
             'companies' => [
                 [
@@ -141,7 +142,38 @@ class ResumeValidationTest extends TestCase
         $this->assertSame('株式会社サンプル', $resume->toArray()['companies'][0]['name']);
         $this->assertSame('フリーランス', $resume->toArray()['companies'][1]['name']);
         $this->assertSame('社内管理ツール', $resume->toArray()['companies'][0]['projects'][0]['name']);
-        $this->assertSame('言語', $resume->toArray()['skills'][0]['category']);
+        $this->assertSame('担当業務', $resume->toArray()['skills'][0]['category']);
+        $this->assertSame('言語', $resume->toArray()['skills'][1]['category']);
         $this->assertSame('Qiita', $resume->toArray()['links'][1]['type_custom']);
+    }
+
+    public function test_it_requires_certification_dates_to_use_month_format(): void
+    {
+        $request = new GenerateResumeRequest();
+        $request->merge([
+            'full_name' => '山田 太郎',
+            'as_of_date' => '2026-08-20',
+            'certifications' => [['date' => '2025年01月', 'name' => '基本情報技術者']],
+        ]);
+
+        $validator = Validator::make($request->all(), $request->rules());
+
+        $this->assertTrue($validator->fails());
+        $this->assertTrue($validator->errors()->has('certifications.0.date'));
+    }
+
+    public function test_it_omits_experience_level_for_job_process_skills(): void
+    {
+        $resume = ResumeData::fromArray([
+            'skills' => [[
+                'category' => '担当業務',
+                'name' => '要件定義',
+                'years' => '5年',
+                'level' => '業務使用',
+                'note' => '利用部門へのヒアリングを担当',
+            ]],
+        ]);
+
+        $this->assertSame('', $resume->toArray()['skills'][0]['level']);
     }
 }

@@ -43,6 +43,12 @@ button {
     margin: 0;
     padding-left: 20px;
 }
+.draft-note {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
 .topbar {
     display: flex;
     align-items: center;
@@ -376,6 +382,20 @@ h1 {
     margin: 4px 0;
     font-size: 11px;
     line-height: 1.6;
+}
+.paper-closing {
+    margin-top: 28px;
+    font-size: 12px;
+    line-height: 1.8;
+}
+.paper-closing p {
+    margin: 0;
+}
+.paper-closing-end {
+    text-align: right;
+}
+.paper-closing-message {
+    text-align: center;
 }
 .paper-table {
     width: 100%;

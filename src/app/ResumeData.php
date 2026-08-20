@@ -5,6 +5,7 @@ namespace App;
 final class ResumeData
 {
     public const SKILL_CATEGORY_ORDER = [
+        '担当業務',
         '言語',
         'フレームワーク',
         'ミドルウェア',
@@ -32,6 +33,7 @@ final class ResumeData
 
     private function normalize(array $data): array
     {
+        $data['considerations'] = trim((string) ($data['considerations'] ?? ''));
         $data['links'] = $this->normalizeLinks($data['links'] ?? []);
         $data['skills'] = $this->normalizeSkills($data['skills'] ?? []);
         $data['companies'] = $this->normalizeCompanies($data['companies'] ?? []);
@@ -78,11 +80,12 @@ final class ResumeData
         }));
 
         foreach ($normalized as $index => $skill) {
+            $category = trim((string) ($skill['category'] ?? ''));
             $normalized[$index] = [
-                'category' => trim((string) ($skill['category'] ?? '')),
+                'category' => $category,
                 'name' => trim((string) ($skill['name'] ?? '')),
                 'years' => trim((string) ($skill['years'] ?? '')),
-                'level' => trim((string) ($skill['level'] ?? '')),
+                'level' => $category === '担当業務' ? '' : trim((string) ($skill['level'] ?? '')),
                 'note' => trim((string) ($skill['note'] ?? '')),
             ];
         }
@@ -110,6 +113,7 @@ final class ResumeData
 
         foreach ($normalized as $index => $company) {
             $company['name'] = trim((string) ($company['name'] ?? ''));
+            $company['business_overview'] = trim((string) ($company['business_overview'] ?? ''));
             if ($company['name'] === '' && (($company['employment_type'] ?? '') === 'フリーランス')) {
                 $company['name'] = 'フリーランス';
             }

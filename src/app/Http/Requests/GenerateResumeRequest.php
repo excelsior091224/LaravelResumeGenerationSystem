@@ -72,6 +72,7 @@ class GenerateResumeRequest extends FormRequest
                 },
             ],
             'companies.*.industry' => ['nullable', 'string', 'max:200'],
+            'companies.*.business_overview' => ['nullable', 'string', 'max:1000'],
             'companies.*.established' => ['nullable', 'string', 'max:50'],
             'companies.*.capital' => ['nullable', 'string', 'max:100'],
             'companies.*.employees' => ['nullable', 'string', 'max:100'],
@@ -112,9 +113,10 @@ class GenerateResumeRequest extends FormRequest
 
             // 資格も複数登録できる繰り返し項目として扱う。
             'certifications' => ['array', 'max:30'],
-            'certifications.*.date' => ['nullable', 'string', 'max:30'],
+            'certifications.*.date' => ['nullable', 'date_format:Y-m'],
             'certifications.*.name' => ['required', 'string', 'max:200'],
             'self_pr' => ['nullable', 'string', 'max:5000'],
+            'considerations' => ['nullable', 'string', 'max:5000'],
         ];
     }
 
@@ -130,6 +132,11 @@ class GenerateResumeRequest extends FormRequest
         }
 
         if (array_key_exists('skills', $input)) {
+            foreach ((array) $input['skills'] as $index => $skill) {
+                if (is_array($skill) && ($skill['category'] ?? '') === '担当業務') {
+                    $input['skills'][$index]['level'] = '';
+                }
+            }
             $input['skills'] = array_values(array_filter(
                 (array) $input['skills'],
                 fn(mixed $skill): bool => is_array($skill) && $this->hasAnyValue($skill, ['category', 'name', 'years', 'level', 'note']),
@@ -173,6 +180,7 @@ class GenerateResumeRequest extends FormRequest
                     'period_from',
                     'period_to',
                     'industry',
+                    'business_overview',
                     'established',
                     'capital',
                     'employees',

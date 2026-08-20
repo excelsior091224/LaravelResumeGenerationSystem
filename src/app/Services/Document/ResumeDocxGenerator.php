@@ -74,6 +74,9 @@ final class ResumeDocxGenerator
             if ($companyMeta !== '') {
                 $section->addText($companyMeta, ['size' => 9], ['spaceAfter' => 40]);
             }
+            if (($company['business_overview'] ?? '') !== '') {
+                $this->addMultilineText($section, '【業務概要】' . "\n" . $company['business_overview'], [], ['spaceAfter' => 50]);
+            }
             foreach ($company['projects'] ?? [] as $project) {
                 $section->addText('■ ' . ($project['name'] ?? '') . '（' . ($project['period_from'] ?? '') . '〜' . ($project['period_to'] ?? '') . '）', ['bold' => true], ['spaceBefore' => 70, 'spaceAfter' => 40, 'indentation' => ['left' => 180]]);
                 $this->addMultilineText($section, $project['description'] ?? '', [], ['indentation' => ['left' => 180], 'spaceAfter' => 40]);
@@ -87,11 +90,17 @@ final class ResumeDocxGenerator
         $this->addHeading($section, '資格');
         foreach ($data['certifications'] ?? [] as $certification) {
             if (($certification['name'] ?? '') !== '') {
-                $this->addMultilineText($section, ($certification['date'] ?? '') . '　' . ($certification['name'] ?? ''), ['name' => 'IPAexGothic', 'color' => '20252A']);
+                $this->addMultilineText($section, $this->formatMonth($certification['date'] ?? '') . '　' . ($certification['name'] ?? ''), ['name' => 'IPAexGothic', 'color' => '20252A']);
             }
         }
         $this->addHeading($section, '自己PR');
         $this->addMultilineText($section, $data['self_pr'] ?? '', ['name' => 'IPAexGothic', 'color' => '20252A']);
+        if (($data['considerations'] ?? '') !== '') {
+            $this->addHeading($section, '配慮事項');
+            $this->addMultilineText($section, $data['considerations'], ['name' => 'IPAexGothic', 'color' => '20252A']);
+        }
+        $this->addMultilineText($section, '以上', ['name' => 'IPAexGothic', 'color' => '20252A'], ['alignment' => Jc::END, 'spaceBefore' => 180]);
+        $this->addMultilineText($section, '是非、面接の機会をいただければと思います。何卒よろしくお願いいたします。', ['name' => 'IPAexGothic', 'color' => '20252A'], ['alignment' => Jc::CENTER]);
 
         $writer = IOFactory::createWriter($word, 'Word2007');
         ob_start();
@@ -137,5 +146,12 @@ final class ResumeDocxGenerator
         }
 
         return $value;
+    }
+
+    private function formatMonth(string $value): string
+    {
+        return preg_match('/^\d{4}-\d{2}$/', $value) === 1
+            ? str_replace('-', '年', $value) . '月'
+            : $value;
     }
 }
