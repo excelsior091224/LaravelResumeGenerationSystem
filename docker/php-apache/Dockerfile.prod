@@ -34,7 +34,7 @@ RUN apt-get update \
         mbstring \
         pdo_sqlite \
         zip \
-    && a2enmod rewrite \
+    && a2enmod rewrite ssl headers \
     && curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && npm install --global npm@latest \
@@ -60,5 +60,5 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database \
     && chmod -R 755 /var/www/html/public
 
-EXPOSE 80
+EXPOSE 80 443
 CMD ["/usr/local/bin/entrypoint-prod.sh"]
