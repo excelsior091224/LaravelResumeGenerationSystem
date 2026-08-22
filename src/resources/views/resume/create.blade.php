@@ -137,7 +137,8 @@
                                                 <option value="業務使用">業務使用</option>
                                                 <option value="個人開発">個人開発</option>
                                                 <option value="自己研鑽">自己研鑽</option>
-                                            </select></div>
+                                            </select>
+                                        </div>
                                         <div class="field full"><label>備考</label><input
                                                 :name="`skills[${index}][note]`" x-model="skill.note"
                                                 placeholder="例：設計から実装、運用まで担当"></div>
@@ -385,6 +386,10 @@
                 </div>
             </section>
         </main>
+        <footer class="site-footer">
+            <a href="{{ route('privacy') }}">プライバシーポリシー</a>
+            <a href="{{ route('contact') }}">お問い合わせ</a>
+        </footer>
     </div>
 </body>
 

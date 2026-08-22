@@ -34,7 +34,6 @@ RUN apt-get update \
     && rm composer-setup.php \
     && composer global require laravel/installer \
     && ln -s /root/.composer/vendor/bin/laravel /usr/local/bin/laravel \
-    && apt-get purge -y --auto-remove curl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY docker/php-apache/000-default.conf /etc/apache2/sites-available/000-default.conf
