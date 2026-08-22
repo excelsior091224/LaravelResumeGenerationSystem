@@ -45,6 +45,8 @@ RUN apt-get update \
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 COPY docker/php-apache/000-default-prod.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/php-apache/entrypoint-prod.sh /usr/local/bin/entrypoint-prod.sh
+RUN chmod +x /usr/local/bin/entrypoint-prod.sh
 
 WORKDIR /var/www/html
 COPY src/composer.json src/composer.lock* ./
@@ -59,4 +61,4 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
     && chmod -R 755 /var/www/html/public
 
 EXPOSE 80
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/entrypoint-prod.sh"]

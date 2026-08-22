@@ -22,7 +22,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Vite::useHotFile(storage_path('framework/vite.hot'));
+        if ($this->app->environment('local')) {
+            Vite::useHotFile(storage_path('framework/vite.hot'));
+        }
+
         Vite::createAssetPathsUsing(
             fn(string $path): string => '/' . ltrim($path, '/')
         );
