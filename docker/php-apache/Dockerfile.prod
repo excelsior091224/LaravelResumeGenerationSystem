@@ -18,6 +18,7 @@ RUN apt-get update \
         git \
         unzip \
         curl \
+        libsqlite3-dev \
         libicu-dev \
         libonig-dev \
         libzip-dev \
