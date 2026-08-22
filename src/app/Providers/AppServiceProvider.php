@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\GeminiResumeSummaryProvider;
 use App\Services\ResumeSummaryProvider;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Vite;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Vite::createAssetPathsUsing(
+            fn(string $path): string => '/' . ltrim($path, '/')
+        );
     }
 }

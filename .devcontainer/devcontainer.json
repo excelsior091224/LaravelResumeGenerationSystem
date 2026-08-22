@@ -8,20 +8,13 @@
     "source=laravel-resume-vscode-server,target=/root/.vscode-server,type=volume"
   ],
   "forwardPorts": [
-    8000,
-    8080
+    "app:80",
+    "phpmyadmin:80"
   ],
-  "portsAttributes": {
-    "8000": {
-      "label": "Laravel",
-      "onAutoForward": "openBrowser"
-    },
-    "8080": {
-      "label": "phpMyAdmin",
-      "onAutoForward": "openBrowser"
-    }
+  "otherPortsAttributes": {
+    "onAutoForward": "silent"
   },
-  "postCreateCommand": "/bin/sh -c \"/usr/local/bin/install-laravel.sh && cd /workspaces/LaravelResumeGenerationSystem/src && php artisan migrate --force --no-interaction\"",
+  "postCreateCommand": "/bin/sh -c \"/usr/local/bin/install-laravel.sh && cd /workspaces/LaravelResumeGenerationSystem/src && rm -f public/hot && npm run build && php artisan migrate --force --no-interaction\"",
   "customizations": {
     "vscode": {
       "extensions": [
