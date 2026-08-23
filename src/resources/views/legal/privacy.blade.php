@@ -54,8 +54,14 @@
 
             <section class="info-section">
                 <h2>4. アクセス解析・広告</h2>
-                <p>本サービスでは、今後アクセス解析サービスやGoogle
-                    AdSenseなどの広告サービスを導入する場合があります。導入時は、Cookieなどの利用目的、第三者提供、広告配信の仕組みを本ポリシーへ追記します。</p>
+                <p>本サービスでは、Google AdSenseを利用して広告を配信しています。Google
+                    AdSenseでは、広告の配信、表示の最適化、広告の効果測定のために、Cookie、広告識別子、アクセス情報などが利用される場合があります。</p>
+                <p>GoogleおよびGoogleのパートナーは、利用者の本サービスや他のウェブサイトへのアクセス情報をもとに、利用者の興味や関心に応じた広告を表示する場合があります。広告配信におけるCookieの利用やパーソナライズ広告の設定については、Googleの<a
+                        href="https://policies.google.com/technologies/ads" target="_blank"
+                        rel="noopener noreferrer">広告に関するポリシー</a>をご確認ください。</p>
+                <p>利用者は、ブラウザの設定でCookieを無効にしたり、Googleの<a href="https://adssettings.google.com/" target="_blank"
+                        rel="noopener noreferrer">広告設定</a>でパーソナライズ広告を無効にしたりできます。Cookieを無効にした場合、本サービスの一部機能や広告表示に影響することがあります。
+                </p>
             </section>
 
             <section class="info-section">
