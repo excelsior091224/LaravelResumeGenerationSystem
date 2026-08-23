@@ -33,3 +33,18 @@ php artisan test tests/Feature/ResumeValidationTest.php
 
 - 日々の進捗や開発メモは [docs/design](docs/design) に保存する。
 - 実装の詳細や技術メモは [src/README.md](src/README.md) にまとめる。
+
+## 本番マルチドメイン運用（Caddy）
+
+本番で複数ドメインを同一VPSに収容する場合は、Caddyをリバースプロキシとして利用する。
+
+```bash
+cd /workspaces/LaravelResumeGenerationSystem
+docker compose -f docker-compose.prod.yml -f docker-compose.proxy.yml up -d --build
+```
+
+- Caddy設定: [docker/caddy/Caddyfile](docker/caddy/Caddyfile)
+- 追加ドメイン用テンプレート: [docker/caddy/sites/example-other-app.caddy.example](docker/caddy/sites/example-other-app.caddy.example)
+- Compose上書き: [docker-compose.proxy.yml](docker-compose.proxy.yml)
+
+CloudflareのFull (strict)を使う場合、証明書を `private/certs` に配置してCaddyへマウントする。

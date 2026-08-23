@@ -1,0 +1,26 @@
+services:
+  caddy:
+    image: caddy:2.9-alpine
+    container_name: edge-caddy
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./docker/caddy/sites:/etc/caddy/sites:ro
+      - ./private/certs:/etc/caddy/certs:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+  app:
+    # 既存の docker-compose.prod.yml の app 定義を利用し、
+    # 外部公開ポートだけ無効化して Caddy から内部接続させる
+    ports: []
+
+volumes:
+  caddy-data:
+  caddy-config:
