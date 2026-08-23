@@ -118,6 +118,7 @@ curl: (7) Failed to connect to 127.0.0.1 port 80
 - プライバシーポリシーページ表示
 - お問い合わせページ表示
 - Googleフォームへのリンク表示
+- Googleフォームへ本番プライバシーポリシーURL（`https://resumefoundries.com/privacy`）を追記
 
 ## 5. 未完了の作業
 
@@ -159,11 +160,8 @@ curl: (7) Failed to connect to 127.0.0.1 port 80
 
 ### Googleフォーム
 
-本番のプライバシーポリシーURLが確定した後、Googleフォームの説明文または同意項目へ次のリンクを追加する。
-
-```text
-https://resumefoundries.com/privacy
-```
+- 本番のプライバシーポリシーURLを説明文または同意項目へ追記済み。
+- 公開フォームURL: `https://docs.google.com/forms/d/e/1FAIpQLScGyeWmXeSJ4vKB7g8sIwaTNhbWSGwsvPZp1yfdhJAImdbPYg/viewform?usp=header`
 
 ## 6. 次に進める順番
 
@@ -175,7 +173,7 @@ https://resumefoundries.com/privacy
 6. HTTPアクセスを確認
 7. HTTPSを設定
 8. 本番のプライバシーポリシーと問い合わせページを確認
-9. Googleフォームへ本番ポリシーURLを追加
+9. Googleフォーム内の本番ポリシーURLとリンク遷移を最終確認
 10. Google AdSenseの申請準備
 
 ## 7. 注意事項

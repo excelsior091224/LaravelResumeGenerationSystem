@@ -10,6 +10,7 @@
 - Cloudflare SSL/TLSモードを`Flexible`から`Full (strict)`へ移行し、公開URLで表示確認。
 - `resumefoundries.com` / `www.resumefoundries.com` の両方で画面表示を確認。
 - `www -> @` の301リダイレクト方針を確定し、運用方針を整理。
+- Googleフォームへ本番プライバシーポリシーURLを追記。
 
 ## 2. 実施した主な修正
 
@@ -62,6 +63,9 @@
    - `/`, `/privacy`, `/contact` の表示確認。
 3. フォーム外部リンク確認
    - `GOOGLE_FORM_URL`リンク遷移確認。
+
+- Googleフォーム内のプライバシーポリシーリンク確認。
+
 4. 軽い運用確認
    - `docker compose -f docker-compose.prod.yml ps`
    - `docker compose -f docker-compose.prod.yml logs --tail=100 app`
@@ -70,6 +74,5 @@
 
 ## 6. 残タスク
 
-- Googleフォーム説明文へ本番プライバシーポリシーURLを明記。
 - 広告申請前チェック（プライバシー/問い合わせ/利用導線の最終確認）。
 - 必要であれば監視・バックアップ運用メモの追加。
