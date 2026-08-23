@@ -43,6 +43,70 @@ cd /workspaces/LaravelResumeGenerationSystem
 docker compose -f docker-compose.prod.yml -f docker-compose.proxy.yml up -d --build
 ```
 
+### 同じComposeプロジェクトに追加する場合
+
+`docker-compose.prod.yml` に、ホストへポート公開しないサービスを追加する。
+
+```yaml
+	other-app:
+		build: /path/to/other-app
+		expose:
+			- "8080"
+```
+
+`docker/caddy/sites/other.example.com.caddy` を作成する。
+
+```caddyfile
+other.example.com {
+		reverse_proxy other-app:8080
+}
+```
+
+VPSで反映する。
+
+```bash
+cd ~/LaravelResumeGenerationSystem
+docker compose -f docker-compose.prod.yml -f docker-compose.proxy.yml up -d --build
+docker compose -f docker-compose.prod.yml -f docker-compose.proxy.yml exec -w /etc/caddy caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+```
+
+### 別リポジトリのComposeとして追加する場合
+
+現在のCaddyネットワーク名を確認する。
+
+```bash
+docker network ls | grep laravelresumegenerationsystem
+```
+
+追加アプリ側のComposeで、表示されたネットワークを外部ネットワークとして指定する。
+
+```yaml
+services:
+	other-app:
+		image: example/other-app:latest
+		expose:
+			- "8080"
+		networks:
+			- edge
+
+networks:
+	edge:
+		external: true
+		name: laravelresumegenerationsystem_default
+```
+
+Caddy側の `docker/caddy/sites/other.example.com.caddy` に `reverse_proxy other-app:8080` を追加し、各Composeを反映する。
+
+```bash
+cd ~/other-app
+docker compose up -d
+
+cd ~/LaravelResumeGenerationSystem
+docker compose -f docker-compose.prod.yml -f docker-compose.proxy.yml exec -w /etc/caddy caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+```
+
+追加アプリにも `80` や `443` の `ports` は設定しない。公開ポートはCaddyだけが使用する。
+
 - Caddy設定: [docker/caddy/Caddyfile](docker/caddy/Caddyfile)
 - 追加ドメイン用テンプレート: [docker/caddy/sites/example-other-app.caddy.example](docker/caddy/sites/example-other-app.caddy.example)
 - Compose上書き: [docker-compose.proxy.yml](docker-compose.proxy.yml)

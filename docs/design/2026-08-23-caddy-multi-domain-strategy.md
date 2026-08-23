@@ -35,6 +35,47 @@ docker compose -f docker-compose.prod.yml -f docker-compose.proxy.yml up -d --bu
 4. `docker compose ... up -d` で反映。
 5. 公開確認（`curl -I https://<domain>`、`curl -I https://www.<domain>`）。
 
+Caddyfileを変更した場合は、実行中のCaddyを明示的に再読み込みする。
+
+```bash
+docker compose -f docker-compose.prod.yml -f docker-compose.proxy.yml exec -w /etc/caddy caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+```
+
+## 別Composeプロジェクトを追加する場合
+
+別リポジトリのアプリは、現在のComposeが作成したネットワークを外部ネットワークとして参照する。
+ネットワーク名はVPSで `docker network ls` を確認する。現在の標準名は `laravelresumegenerationsystem_default`。
+
+追加アプリ側のCompose例:
+
+```yaml
+services:
+	other-app:
+		image: example/other-app:latest
+		expose:
+			- "8080"
+		networks:
+			- edge
+
+networks:
+	edge:
+		external: true
+		name: laravelresumegenerationsystem_default
+```
+
+Caddyの `docker/caddy/sites/<domain>.caddy` に `reverse_proxy other-app:8080` を定義し、追加アプリを先に起動してからCaddyを再読み込みする。
+
+```bash
+cd ~/other-app
+docker compose up -d
+
+cd ~/LaravelResumeGenerationSystem
+docker compose -f docker-compose.prod.yml -f docker-compose.proxy.yml up -d
+docker compose -f docker-compose.prod.yml -f docker-compose.proxy.yml exec -w /etc/caddy caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+```
+
+追加アプリからホストの80/443を公開してはいけない。これらはCaddy専用とする。
+
 ## 運用上の注意
 
 - 既存のApache側443公開は停止し、TLS終端をCaddyに一本化する。
