@@ -6,9 +6,6 @@ services:
     container_name: resumefoundries-app
     restart: unless-stopped
     working_dir: /var/www/html
-    ports:
-      - "80:80"
-      - "443:443"
     env_file:
       - ./src/.env.production
     environment:

@@ -9,7 +9,7 @@
 ## 構成方針
 
 - `docker-compose.prod.yml`: アプリ本体の定義を維持。
-- `docker-compose.proxy.yml`: Caddyを追加し、`app` の外部公開ポートを無効化。
+- `docker-compose.proxy.yml`: Caddyを追加する。`app` は基礎Compose側で外部ポートを公開しない。
 - `docker/caddy/Caddyfile`: 既存ドメインのreverse proxy定義 + `sites/*.caddy` のimport。
 - `docker/caddy/sites/*.caddy`: 将来アプリ用のドメイン追加ファイル。
 

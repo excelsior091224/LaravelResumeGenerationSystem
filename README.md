@@ -36,7 +36,7 @@ php artisan test tests/Feature/ResumeValidationTest.php
 
 ## 本番マルチドメイン運用（Caddy）
 
-本番で複数ドメインを同一VPSに収容する場合は、Caddyをリバースプロキシとして利用する。
+本番で複数ドメインを同一VPSに収容する場合は、Caddyをリバースプロキシとして利用する。アプリはホストの80/443を公開せず、Caddyから内部接続する。
 
 ```bash
 cd /workspaces/LaravelResumeGenerationSystem
