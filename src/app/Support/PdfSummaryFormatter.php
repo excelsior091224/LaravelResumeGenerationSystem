@@ -11,6 +11,7 @@ final class PdfSummaryFormatter
 
     public static function toHtml(string $text): string
     {
+        $text = self::formatPreservingLineBreaks($text);
         $html = nl2br(htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), false);
 
         return preg_replace_callback(

@@ -31,6 +31,15 @@ class DocumentGenerationTest extends TestCase
         $this->assertSame("職務要約の一行目\n職務要約の二行目", $summary);
     }
 
+    public function test_pdf_text_replaces_tabs_with_spaces(): void
+    {
+        $html = PdfSummaryFormatter::toHtml("◆\tAI エージェント\n◆\t学習姿勢");
+
+        $this->assertStringNotContainsString("\t", $html);
+        $this->assertStringContainsString('◆ AI エージェント', $html);
+        $this->assertStringContainsString('◆ 学習姿勢', $html);
+    }
+
     public function test_server_preview_uses_the_shared_paper_structure(): void
     {
         $response = $this->withoutMiddleware()->post(route('resume.preview'), $this->resumePayload());
