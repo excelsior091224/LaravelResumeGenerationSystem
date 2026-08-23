@@ -6,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>職務経歴書ジェネレーター</title>
+    @include('partials.gtm-head')
     @include('partials.adsense')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
+    @include('partials.gtm-body')
     <div class="resume-shell" x-data="resumeForm({{ Js::from($skillCategories) }}, {{ Js::from($teamRoles) }})">
         {{-- 画面のヘッダー。入力内容を保存しない方針も明示する。 --}}
         <header class="topbar">

@@ -5,11 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>お問い合わせ | 職務経歴書ジェネレーター</title>
+    @include('partials.gtm-head')
     @include('partials.adsense')
     @vite(['resources/css/app.css'])
 </head>
 
 <body>
+    @include('partials.gtm-body')
     <div class="info-shell">
         <header class="topbar">
             <a class="brand brand-link" href="{{ route('resume.create') }}"><span class="brand-mark">R</span><span>Resume
