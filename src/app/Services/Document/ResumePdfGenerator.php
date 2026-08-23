@@ -6,6 +6,7 @@ use App\ResumeData;
 use App\Support\PdfSummaryFormatter;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\File;
 
 final class ResumePdfGenerator
 {
@@ -15,9 +16,15 @@ final class ResumePdfGenerator
         $data['summary_html'] = PdfSummaryFormatter::toHtml($data['summary'] ?? '');
         $data['self_pr_html'] = PdfSummaryFormatter::toHtml($data['self_pr'] ?? '');
 
+        File::ensureDirectoryExists(storage_path('fonts'));
+        File::ensureDirectoryExists(storage_path('app/dompdf'));
+
         $options = new Options();
         $options->set('defaultFont', 'IPAexGothic');
         $options->setChroot(base_path());
+        $options->setFontDir(storage_path('fonts'));
+        $options->setFontCache(storage_path('fonts'));
+        $options->setTempDir(storage_path('app/dompdf'));
         $options->set('isRemoteEnabled', false);
         $options->set('isPhpEnabled', false);
 

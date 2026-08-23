@@ -5,6 +5,8 @@ mkdir -p \
   /var/www/html/storage/framework/cache \
   /var/www/html/storage/framework/sessions \
   /var/www/html/storage/framework/views \
+  /var/www/html/storage/fonts \
+  /var/www/html/storage/app/dompdf \
   /var/www/html/bootstrap/cache \
   /var/www/html/database
 
