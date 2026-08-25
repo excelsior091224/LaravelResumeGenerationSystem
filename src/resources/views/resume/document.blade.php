@@ -103,10 +103,6 @@
             white-space: pre-wrap;
         }
 
-        .nowrap {
-            white-space: nowrap;
-        }
-
         .paper-section ul {
             margin: 0;
             padding-left: 15pt;
@@ -120,8 +116,29 @@
 
         .paper-table {
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
             font-size: 8pt;
+        }
+
+        .skill-category-column {
+            width: 17%;
+        }
+
+        .skill-name-column {
+            width: 18%;
+        }
+
+        .skill-years-column {
+            width: 10%;
+        }
+
+        .skill-level-column {
+            width: 15%;
+        }
+
+        .skill-note-column {
+            width: 40%;
         }
 
         .paper-table th,
@@ -129,7 +146,9 @@
             border: 0.5pt solid #20252a;
             padding: 3pt 4pt;
             vertical-align: top;
-            overflow-wrap: anywhere;
+            word-break: normal;
+            overflow-wrap: break-word;
+            line-break: strict;
         }
 
         .paper-table th {

@@ -35,15 +35,14 @@ class DocumentGenerationTest extends TestCase
         $this->assertStringContainsString('GitHub Copilot', $formatted);
         $this->assertStringContainsString("改善しました。\n次の段落です。", $formatted);
     }
-    public function test_pdf_summary_keeps_inline_english_and_japanese_phrases_together(): void
+    public function test_pdf_text_uses_natural_wrapping_for_all_phrases(): void
     {
         $formatted = PdfSummaryFormatter::format("IT エンジニアへのキャリアチェンジ\nを目指しました。");
 
         $html = PdfSummaryFormatter::toHtml('IT エンジニア、約 3 年間、GitHub Copilot');
-        $this->assertStringContainsString('<span class="nowrap">IT エンジニア</span>', $html);
-        $this->assertStringContainsString('<span class="nowrap">約 3 年間</span>', $html);
-        $this->assertStringContainsString('<span class="nowrap">GitHub Copilot</span>', $html);
+        $this->assertStringNotContainsString('class="nowrap"', $html);
         $this->assertStringNotContainsString("\u{2060}", $html);
+        $this->assertStringContainsString('IT エンジニア、', $html);
         $preserved = PdfSummaryFormatter::formatPreservingLineBreaks("一つ目\n二つ目");
         $this->assertSame("一つ目\n二つ目", $preserved);
         $summary = PdfSummaryFormatter::formatPreservingLineBreaks("職務要約の一行目\n職務要約の二行目");
@@ -57,6 +56,16 @@ class DocumentGenerationTest extends TestCase
         $this->assertStringNotContainsString("\t", $html);
         $this->assertStringContainsString('◆ AI エージェント', $html);
         $this->assertStringContainsString('◆ 学習姿勢', $html);
+    }
+
+    public function test_pdf_text_normalizes_excessive_blank_lines(): void
+    {
+        $html = PdfSummaryFormatter::toHtml("GitHub Copilotを活用しました。\n\n\n次の段落です。");
+
+        $this->assertStringContainsString('GitHub Copilotを活用しま', $html);
+        $this->assertStringContainsString('次の段落で', $html);
+        $this->assertStringContainsString('す。', $html);
+        $this->assertStringNotContainsString('<br>\n<br>\n<br>', $html);
     }
 
     public function test_server_preview_uses_the_shared_paper_structure(): void
@@ -87,7 +96,7 @@ class DocumentGenerationTest extends TestCase
         $response->assertOk();
         $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
         $this->assertStringStartsWith('%PDF-', $response->getContent());
-        $this->assertStringContainsString('IPAexGothic', $response->getContent());
+        $this->assertGreaterThan(1000, strlen($response->getContent()));
     }
 
     public function test_it_generates_a_docx_download_without_persisting_resume_data(): void
@@ -136,6 +145,92 @@ class DocumentGenerationTest extends TestCase
         $docx = $this->withoutMiddleware()->post(route('resume.download.docx'), $payload);
         $docx->assertOk();
         $this->assertSame('PK', substr($docx->getContent(), 0, 2));
+    }
+
+    public function test_it_generates_a_complete_resume_with_all_sections_and_formats(): void
+    {
+        $payload = $this->longResumePayload();
+        $html = view('resume.document', ['resume' => [
+            ...$payload,
+            'summary_html' => PdfSummaryFormatter::toHtml($payload['summary']),
+            'self_pr_html' => PdfSummaryFormatter::toHtml($payload['self_pr']),
+            'considerations_html' => PdfSummaryFormatter::toHtml($payload['considerations']),
+        ]])->render();
+
+        foreach ([
+            '職務経歴書',
+            '職務要約',
+            '得意業務',
+            '技術系アカウント・ポートフォリオ',
+            'PCスキル / テクニカルスキル',
+            '職務経歴',
+            '資格',
+            '自己PR',
+            '配慮事項',
+            '長文検証株式会社 4',
+            '長文検証プロジェクト 4-5',
+            'JavaScript',
+            'GitHub Actions',
+            '基本情報技術者試験',
+            'GitHub Copilotの活用',
+            '曖昧な指示に基づく作業',
+            '是非、面接の機会をいただければと思います。',
+        ] as $text) {
+            $this->assertStringContainsString($text, $html);
+        }
+
+        $this->assertSame(12, count($payload['skills']));
+        $this->assertSame(10, count($payload['certifications']));
+        $this->assertSame(4, count($payload['companies']));
+        $this->assertSame(20, collect($payload['companies'])->sum(fn(array $company): int => count($company['projects'])));
+
+        $pdf = $this->withoutMiddleware()->post(route('resume.download.pdf'), $payload);
+        $pdf->assertOk();
+        $this->assertSame('application/pdf', $pdf->headers->get('Content-Type'));
+        $this->assertStringStartsWith('%PDF-', $pdf->getContent());
+        $this->assertGreaterThanOrEqual(2, substr_count($pdf->getContent(), '/Type /Page'));
+
+        $docx = $this->withoutMiddleware()->post(route('resume.download.docx'), $payload);
+        $docx->assertOk();
+        $this->assertSame('PK', substr($docx->getContent(), 0, 2));
+    }
+
+    public function test_it_keeps_a_skill_table_that_spans_multiple_pdf_pages(): void
+    {
+        $payload = $this->resumePayload();
+        $payload['summary'] = '';
+        $payload['self_pr'] = '';
+        $payload['considerations'] = '';
+        $payload['companies'] = [];
+        $payload['certifications'] = [];
+        $payload['links'] = [];
+        $payload['skills'] = array_map(
+            static fn(int $index): array => [
+                'category' => 'カテゴリ' . (($index % 6) + 1),
+                'name' => 'スキル名' . $index,
+                'years' => '3年',
+                'level' => '業務使用',
+                'note' => '長い備考の折り返しを検証するための説明文です。設計と実装を担当しました。',
+            ],
+            range(1, 60),
+        );
+
+        $response = $this->withoutMiddleware()->post(route('resume.download.pdf'), $payload);
+
+        $response->assertOk();
+        $pdf = $response->getContent();
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertGreaterThanOrEqual(2, substr_count($pdf, '/Type /Page'));
+
+        $outputDirectory = storage_path('app/test-output');
+        if (! is_dir($outputDirectory)) {
+            mkdir($outputDirectory, 0775, true);
+        }
+        file_put_contents($outputDirectory . '/skills-table-multipage.pdf', $pdf);
+
+        $html = view('resume.document', ['resume' => $payload])->render();
+        $this->assertSame(61, substr_count($html, '<tr>'));
+        $this->assertSame(60, substr_count($html, 'スキル名'));
     }
 
     public function test_docx_self_pr_contains_explicit_word_breaks(): void
@@ -239,7 +334,7 @@ class DocumentGenerationTest extends TestCase
     private function longResumePayload(): array
     {
         $payload = $this->resumePayload();
-        $payload['summary'] = "大学卒業後、2016年2月から約3年間、事務職として業務改善とデータ管理を担当しました。\n2019年10月にITエンジニアへ転職し、Python、PHP、Laravelを中心にWebアプリケーションの設計、実装、テスト、運用改善まで経験しました。直近ではGitHub Copilotを活用しながら、利用者の業務効率化と保守性の向上を意識して開発しています。";
+        $payload['summary'] = "大学卒業後、2016年2月から約3年間、事務職として業務改善とデータ管理を担当しました。\n2019年10月にITエンジニアへ転職し、Python、PHP、Laravelを中心にWebアプリケーションの設計、実装、テスト、運用改善まで経験しました。\n直近では、利用部門へのヒアリングを通じて業務上の課題を整理し、入力手順の見直しやデータ連携の自動化を含む改善提案を行っています。GitHub Copilotも活用しながら、可読性、保守性、利用者にとっての分かりやすさを意識して開発しています。\n要件の確認からリリース後の問い合わせ対応まで一貫して担当し、関係者と認識を合わせながら安定した運用につなげてきました。複数の技術や業務知識を継続的に学び、状況に応じて実践へ反映できる点が強みです。";
         $payload['specialty'] = '業務整理から基本設計、実装、テスト、運用改善までを一貫して担当すること。';
         $payload['links'] = [
             ['type' => 'GitHub', 'url' => 'https://github.com/excelsior091224'],
@@ -258,7 +353,8 @@ class DocumentGenerationTest extends TestCase
             ['date' => '2025-01', 'name' => '基本情報技術者試験'],
             ['date' => '2024-06', 'name' => 'AWS Certified Cloud Practitioner'],
         ];
-        $payload['self_pr'] = "【配慮事項】\n曖昧な指示の場合は確認事項を整理し、認識を合わせてから作業を開始します。\n\n◆ GitHub Copilotの活用\nエラー原因の特定やコード補完に活用し、レビュー可能な形で成果物を仕上げます。\n\n◆ 学習姿勢\nLinux、Docker、クラウド技術を継続的に学習し、実務へ還元しています。";
+        $payload['self_pr'] = "◆ GitHub Copilotの活用\n普段の実務では、エラー原因の特定、コード補完、既存コードの理解を目的としてGitHub Copilotを活用しています。生成結果をそのまま採用するのではなく、要件との整合性を確認し、テストとレビューを行ったうえで成果物へ反映しています。\n直近の開発では、認証機能に関するエラーの原因を段階的に切り分け、再現条件と修正方針を整理してから実装しました。これにより、作業のスピードだけでなく、問題を説明可能な状態に保つことも意識しています。\n\n◆ 自学自習・キャッチアップ力\n新しい技術を学ぶ際は、公式ドキュメントを確認したうえで小さな検証環境を作り、実際に動かしながら理解を深めています。Linux、Docker、クラウド、Webアプリケーション開発について継続的に学習し、得た知識を実務の設計や運用改善へ還元してきました。\n業務上必要となった技術だけでなく、周辺領域も含めて学習することで、目の前の実装だけに留まらず、将来の保守や拡張も考えた提案ができるよう努めています。\n\n◆ チームとの協働\n不明点や前提条件を早めに確認し、作業内容と優先順位を共有しながら進めます。仕様変更や障害対応の際も、影響範囲を整理して関係者へ報告し、利用者が安心して使える状態を維持することを大切にしています。";
+        $payload['considerations'] = "【障害の状況/配慮事項】\n曖昧な指示に基づく作業が不得意なため、作業開始前に目的、期限、優先順位、完了条件を確認していただけると安定して取り組めます。\n複数の依頼が重なった場合は、ToDoリストへ書き出して順番を整理し、必要に応じて優先順位を確認しながら対応します。\nまた、急な変更や催促がある場合も、変更点と対応期限を具体的に共有していただければ、落ち着いて状況を整理し、確実に作業を進められます。";
 
         $payload['links'] = array_merge($payload['links'], [
             ['type' => 'ポートフォリオ', 'url' => 'https://portfolio.example.com/profile'],

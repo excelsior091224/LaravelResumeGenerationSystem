@@ -8,6 +8,7 @@ RUN apt-get update \
         git \
         unzip \
         curl \
+        chromium \
         libicu-dev \
         libonig-dev \
         libzip-dev \

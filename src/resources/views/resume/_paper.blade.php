@@ -46,6 +46,13 @@
             ->groupBy(fn($skill) => $skill['category'] ?: '未分類');
     @endphp
     <table class="paper-table">
+        <colgroup>
+            <col class="skill-category-column">
+            <col class="skill-name-column">
+            <col class="skill-years-column">
+            <col class="skill-level-column">
+            <col class="skill-note-column">
+        </colgroup>
         <thead>
             <tr>
                 <th>カテゴリ</th>
@@ -59,9 +66,7 @@
             @forelse ($skillGroups as $category => $skills)
                 @foreach ($skills as $index => $skill)
                     <tr>
-                        @if ($index === 0)
-                            <td rowspan="{{ $skills->count() }}">{{ $category }}</td>
-                        @endif
+                        <td>{{ $category }}</td>
                         <td>{{ $skill['name'] ?? '' }}</td>
                         <td>{{ $skill['years'] ?? '' }}</td>
                         <td>{{ $skill['level'] ?? '' }}</td>
@@ -153,7 +158,11 @@
 @if (!empty($resume['considerations']))
     <div class="paper-section">
         <h3>■ 配慮事項</h3>
-        <p>{{ $resume['considerations'] }}</p>
+        <p>
+            @if (isset($resume['considerations_html']))
+                {!! $resume['considerations_html'] !!}@else{{ $resume['considerations'] }}
+            @endif
+        </p>
     </div>
 @endif
 <div class="paper-closing">

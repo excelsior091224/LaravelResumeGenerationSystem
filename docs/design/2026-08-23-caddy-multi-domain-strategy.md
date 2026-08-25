@@ -1,3 +1,5 @@
+PR
+
 # 2026-08-23 Caddy Multi Domain Strategy
 
 ## 目的

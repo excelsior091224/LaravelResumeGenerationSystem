@@ -29,6 +29,19 @@ npm run build
 php artisan test tests/Feature/ResumeValidationTest.php
 ```
 
+### Chromium方式のPDFテスト
+
+開発コンテナーをリビルドすると、本番と同じChromium方式でPDFを生成できます。
+
+```bash
+docker compose build --no-cache app
+docker compose up -d app
+docker exec laravel-app chromium --version
+docker exec laravel-app sh -lc 'cd /workspaces/LaravelResumeGenerationSystem/src && php artisan test --filter=DocumentGenerationTest --compact'
+```
+
+`chromium --version`が成功すれば、PDF生成時にChromiumが自動選択されます。Chromiumが利用できない環境では、開発用のフォールバックとしてDompdfが使われます。
+
 ## 補足
 
 - 日々の進捗や開発メモは [docs/design](docs/design) に保存する。
