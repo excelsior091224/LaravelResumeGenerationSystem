@@ -5,11 +5,7 @@
 
 <div class="paper-section">
     <h3>■ 職務要約</h3>
-    <p class="summary-text">
-        @if (isset($resume['summary_html']))
-            {!! $resume['summary_html'] !!}@else{{ $resume['summary'] ?? '' }}
-        @endif
-    </p>
+    <p class="summary-text">@if (isset($resume['summary_html'])){!! $resume['summary_html'] !!}@else{{ $resume['summary'] ?? '' }}@endif</p>
 </div>
 <div class="paper-section">
     <h3>■ 得意業務</h3>
@@ -91,33 +87,25 @@
     @endphp
     @forelse ($companies as $company)
         <div class="company-block">
-            <p class="company-title">
-                勤務先：{{ $company['name'] ?: (($company['employment_type'] ?? '') === 'フリーランス' ? 'フリーランス' : '所属企業名未入力') }}（{{ $company['period_from'] ?? '' }}〜{{ $company['period_to'] ?? '' }}）
-            </p>
+            <p class="company-title">勤務先：{{ $company['name'] ?: (($company['employment_type'] ?? '') === 'フリーランス' ? 'フリーランス' : '所属企業名未入力') }}（{{ $company['period_from'] ?? '' }}〜{{ $company['period_to'] ?? '' }}）</p>
             @if (
                 ($company['employment_type'] ?? '') ||
                     ($company['industry'] ?? '') ||
                     ($company['established'] ?? '') ||
                     ($company['capital'] ?? '') ||
                     ($company['employees'] ?? ''))
-                <p class="project-detail">
-                    {{ collect([($company['employment_type'] ?? '') === 'その他' ? $company['employment_type_custom'] ?? '' : $company['employment_type'] ?? '', $company['industry'] ?? '', $company['established'] ?? '' ? '設立：' . $company['established'] : null, $company['capital'] ?? '' ? '資本金：' . $company['capital'] : null, $company['employees'] ?? '' ? '従業員数：' . $company['employees'] : null])->filter()->join(' / ') }}
-                </p>
+                <p class="project-detail">{{ collect([($company['employment_type'] ?? '') === 'その他' ? $company['employment_type_custom'] ?? '' : $company['employment_type'] ?? '', $company['industry'] ?? '', $company['established'] ?? '' ? '設立：' . $company['established'] : null, $company['capital'] ?? '' ? '資本金：' . $company['capital'] : null, $company['employees'] ?? '' ? '従業員数：' . $company['employees'] : null])->filter()->join(' / ') }}</p>
             @endif
             @if (!empty($company['business_overview']))
                 <p class="project-detail"><b>【業務概要】</b><br>{{ $company['business_overview'] }}</p>
             @endif
             @foreach (collect($company['projects'] ?? [])->sortByDesc('period_from')->values() as $project)
                 <div class="project-block">
-                    <p class="project-title">■
-                        {{ $project['name'] ?? '' }}（{{ $project['period_from'] ?? '' }}〜{{ $project['period_to'] ?? '' }}）
-                    </p>
+                    <p class="project-title">■ {{ $project['name'] ?? '' }}（{{ $project['period_from'] ?? '' }}〜{{ $project['period_to'] ?? '' }}）</p>
                     <p class="project-detail">{{ $project['description'] ?? '' }}</p>
                     <p class="project-detail"><b>【担当工程】</b><br>{{ $project['processes'] ?? '' }}</p>
                     <p class="project-detail"><b>【使用技術・DB・OS】</b><br>{{ $project['technologies'] ?? '' }}</p>
-                    <p class="project-detail">
-                        <b>【組織・役割】</b><br>{{ ($project['role'] ?? '') === 'その他' ? $project['role_custom'] ?? '' : $project['role'] ?? '' }}
-                        / {{ $project['team'] ?? '' }}</p>
+                    <p class="project-detail"><b>【組織・役割】</b><br>{{ ($project['role'] ?? '') === 'その他' ? $project['role_custom'] ?? '' : $project['role'] ?? '' }} / {{ $project['team'] ?? '' }}</p>
                 </div>
             @endforeach
         </div>
@@ -148,20 +136,12 @@
 </div>
 <div class="paper-section">
     <h3>■ 自己PR</h3>
-    <p>
-        @if (isset($resume['self_pr_html']))
-            {!! $resume['self_pr_html'] !!}@else{{ $resume['self_pr'] ?? '' }}
-        @endif
-    </p>
+    <p>@if (isset($resume['self_pr_html'])){!! $resume['self_pr_html'] !!}@else{{ $resume['self_pr'] ?? '' }}@endif</p>
 </div>
 @if (!empty($resume['considerations']))
     <div class="paper-section">
         <h3>■ 配慮事項</h3>
-        <p>
-            @if (isset($resume['considerations_html']))
-                {!! $resume['considerations_html'] !!}@else{{ $resume['considerations'] }}
-            @endif
-        </p>
+        <p>@if (isset($resume['considerations_html'])){!! $resume['considerations_html'] !!}@else{{ $resume['considerations'] }}@endif</p>
     </div>
 @endif
 <div class="paper-closing">
