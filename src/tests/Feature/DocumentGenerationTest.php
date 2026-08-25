@@ -8,6 +8,25 @@ use Tests\TestCase;
 
 class DocumentGenerationTest extends TestCase
 {
+    public function test_resume_form_uses_https_urls_behind_the_reverse_proxy(): void
+    {
+        $response = $this->withHeader('X-Forwarded-Proto', 'https')
+            ->get('http://resumefoundries.com/');
+
+        $response->assertOk();
+        $response->assertSee('action="https://resumefoundries.com/resume/preview"', false);
+    }
+
+    public function test_resume_form_blocks_implicit_submission_and_uses_explicit_download_actions(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('@submit.prevent', false);
+        $response->assertSee('@click="download(', false);
+        $response->assertDontSee('formaction=', false);
+    }
+
     public function test_docx_formatter_preserves_line_breaks_and_protects_target_phrase(): void
     {
         $formatted = DocxTextFormatter::format("直近ではGitHub Copilotを活用しながら、利用者の業務を改善しました。\n次の段落です。");

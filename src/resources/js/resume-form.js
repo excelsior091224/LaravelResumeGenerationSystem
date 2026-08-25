@@ -213,7 +213,16 @@ window.resumeForm = (skillData, roleData) => ({
         this.aiConsent = false;
         this.summaryError = "";
     },
-    syncForm() {},
+    download(action) {
+        const form = this.$refs.resumeForm;
+
+        if (!form.reportValidity()) {
+            return;
+        }
+
+        form.action = action;
+        form.submit();
+    },
     hasAnyValue(item, fields) {
         return fields.some((field) => {
             const value = item[field];

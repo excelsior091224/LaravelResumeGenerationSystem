@@ -29,7 +29,7 @@
                     <p>職歴を積み上げながら、右側のプレビューで完成形を確認できます。</p>
                 </div>
 
-                <form method="POST" action="{{ route('resume.preview') }}" @submit="syncForm($event)">
+                <form method="POST" action="{{ route('resume.preview') }}" x-ref="resumeForm" @submit.prevent>
                     @csrf
                     @if ($errors->any())
                         <div class="validation-summary" role="alert">
@@ -371,10 +371,10 @@
                     </section>
                     <p class="draft-note">入力内容はこのブラウザに下書きとして自動保存されます。共有端末では作業後に下書きをクリアしてください。</p>
                     <div class="form-actions"><button type="button" class="btn btn-secondary"
-                            @click="window.print()">プレビューを印刷</button><button type="submit" class="btn btn-secondary"
-                            formaction="{{ route('resume.download.pdf') }}">PDFをダウンロード</button><button type="submit"
-                            class="btn btn-secondary"
-                            formaction="{{ route('resume.download.docx') }}">DOCXをダウンロード</button><button
+                            @click="window.print()">プレビューを印刷</button><button type="button" class="btn btn-secondary"
+                            @click="download('{{ route('resume.download.pdf') }}')">PDFをダウンロード</button><button
+                            type="button" class="btn btn-secondary"
+                            @click="download('{{ route('resume.download.docx') }}')">DOCXをダウンロード</button><button
                             type="button" class="btn btn-quiet" @click="clearDraft">下書きをクリア</button></div>
                 </form>
             </section>
