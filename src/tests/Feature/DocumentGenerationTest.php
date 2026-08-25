@@ -68,6 +68,54 @@ class DocumentGenerationTest extends TestCase
         $this->assertStringNotContainsString('<br>\n<br>\n<br>', $html);
     }
 
+    public function test_pdf_paragraphs_do_not_start_with_template_whitespace(): void
+    {
+        $html = view('resume.document', ['resume' => [
+            'as_of_date' => '2026-08-25',
+            'full_name' => 'テスト',
+            'summary_html' => '要約本文',
+            'self_pr_html' => '自己PR本文',
+            'considerations_html' => '配慮事項本文',
+            'skills' => [],
+            'links' => [],
+            'companies' => [],
+            'certifications' => [],
+            'considerations' => '配慮事項本文',
+        ]])->render();
+
+        $this->assertStringContainsString('<p class="summary-text">要約本文</p>', $html);
+        $this->assertStringContainsString('<p>自己PR本文</p>', $html);
+        $this->assertStringContainsString('<p>配慮事項本文</p>', $html);
+    }
+
+    public function test_career_history_paragraphs_do_not_start_with_template_whitespace(): void
+    {
+        $html = view('resume.document', ['resume' => [
+            'as_of_date' => '2026-08-25',
+            'full_name' => 'テスト',
+            'skills' => [],
+            'links' => [],
+            'companies' => [[
+                'name' => '会社名',
+                'employment_type' => '正社員',
+                'period_from' => '2020-01',
+                'period_to' => '2021-01',
+                'projects' => [[
+                    'name' => '案件名',
+                    'period_from' => '2020-01',
+                    'period_to' => '2020-12',
+                    'role' => '開発者',
+                    'team' => '開発2名',
+                ]],
+            ]],
+            'certifications' => [],
+        ]])->render();
+
+        $this->assertStringContainsString('<p class="company-title">勤務先：会社名', $html);
+        $this->assertStringContainsString('<p class="project-title">■ 案件名', $html);
+        $this->assertStringContainsString('<p class="project-detail"><b>【組織・役割】</b><br>開発者 / 開発2名</p>', $html);
+    }
+
     public function test_server_preview_uses_the_shared_paper_structure(): void
     {
         $response = $this->withoutMiddleware()->post(route('resume.preview'), $this->resumePayload());
@@ -157,25 +205,27 @@ class DocumentGenerationTest extends TestCase
             'considerations_html' => PdfSummaryFormatter::toHtml($payload['considerations']),
         ]])->render();
 
-        foreach ([
-            '職務経歴書',
-            '職務要約',
-            '得意業務',
-            '技術系アカウント・ポートフォリオ',
-            'PCスキル / テクニカルスキル',
-            '職務経歴',
-            '資格',
-            '自己PR',
-            '配慮事項',
-            '長文検証株式会社 4',
-            '長文検証プロジェクト 4-5',
-            'JavaScript',
-            'GitHub Actions',
-            '基本情報技術者試験',
-            'GitHub Copilotの活用',
-            '曖昧な指示に基づく作業',
-            '是非、面接の機会をいただければと思います。',
-        ] as $text) {
+        foreach (
+            [
+                '職務経歴書',
+                '職務要約',
+                '得意業務',
+                '技術系アカウント・ポートフォリオ',
+                'PCスキル / テクニカルスキル',
+                '職務経歴',
+                '資格',
+                '自己PR',
+                '配慮事項',
+                '長文検証株式会社 4',
+                '長文検証プロジェクト 4-5',
+                'JavaScript',
+                'GitHub Actions',
+                '基本情報技術者試験',
+                'GitHub Copilotの活用',
+                '曖昧な指示に基づく作業',
+                '是非、面接の機会をいただければと思います。',
+            ] as $text
+        ) {
             $this->assertStringContainsString($text, $html);
         }
 
