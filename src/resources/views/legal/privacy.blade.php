@@ -18,6 +18,7 @@
                     Foundry</span></a>
             <nav class="site-nav" aria-label="サイトメニュー">
                 <a href="{{ route('resume.create') }}">作成画面</a>
+                <a href="{{ route('guides.index') }}">書き方ガイド</a>
                 <a href="{{ route('contact') }}">お問い合わせ</a>
             </nav>
         </header>
