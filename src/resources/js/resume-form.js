@@ -155,7 +155,8 @@ window.resumeForm = (skillData, roleData) => ({
             return {
                 ...blankResume(),
                 ...draft,
-                as_of_date: draft.as_of_date || toDateInputValue(),
+                // 基準日は保存対象外とし、常に読み込み時点の当日日付を使用する。
+                as_of_date: toDateInputValue(),
                 links:
                     Array.isArray(draft.links) && draft.links.length
                         ? draft.links.map((link) => ({
@@ -205,7 +206,9 @@ window.resumeForm = (skillData, roleData) => ({
     },
     saveDraft() {
         try {
-            localStorage.setItem(draftStorageKey, JSON.stringify(this.resume));
+            // 基準日は保存対象外とする（常に当日日付を使用するため）。
+            const { as_of_date, ...draft } = this.resume;
+            localStorage.setItem(draftStorageKey, JSON.stringify(draft));
         } catch {
             // ブラウザの保存領域が使えない場合も、入力自体は継続できる。
         }
