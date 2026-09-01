@@ -48,9 +48,17 @@ const blankLink = () => ({
     type_custom: "",
     url: "",
 });
+const toDateInputValue = (date = new Date()) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+};
+
 const blankResume = () => ({
     full_name: "",
-    as_of_date: new Date().toISOString().slice(0, 10),
+    as_of_date: toDateInputValue(),
     links: [blankLink()],
     summary: "",
     specialty: "",
@@ -147,6 +155,7 @@ window.resumeForm = (skillData, roleData) => ({
             return {
                 ...blankResume(),
                 ...draft,
+                as_of_date: draft.as_of_date || toDateInputValue(),
                 links:
                     Array.isArray(draft.links) && draft.links.length
                         ? draft.links.map((link) => ({
