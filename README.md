@@ -17,7 +17,22 @@
 - [src/resources](src/resources)
 - [src/routes](src/routes)
 - [src/tests](src/tests)
+- [apps/resume-foundry](apps/resume-foundry) - 新規リポジトリ `AstroResumeFoundry` へ切り出すためのAstro + Cloudflare Workersプロトタイプ
 - [docs/design](docs/design)
+
+## AstroResumeFoundry への切り出し方針
+
+保存型の職務経歴管理SaaSは、既存Laravelアプリとは別の新規リポジトリ `AstroResumeFoundry` として管理する方針。
+このリポジトリ内の `apps/resume-foundry` は、新規リポジトリへ移すための一時的なプロトタイプ配置である。
+
+```bash
+cd apps/resume-foundry
+npm run dev
+npm run build
+```
+
+新規リポジトリ作成後は、`apps/resume-foundry` の内容を `AstroResumeFoundry` のルートへ移し、保存型の職歴ログ、認証、D1保存、PDF/DOCX/AI課金の検証は新規リポジトリ側で進める。
+既存Laravelアプリは単発の職務経歴書生成ツールとして残す。
 
 ## 開発・確認コマンド
 
