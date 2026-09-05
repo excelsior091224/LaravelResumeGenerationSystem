@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "resume-foundry",
+  "name": "astro-resume-foundry",
   "compatibility_date": "2026-09-05",
   "assets": {
     "directory": "./dist",
@@ -9,7 +9,7 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "resume-foundry",
+      "database_name": "astro-resume-foundry",
       "database_id": "REPLACE_WITH_CLOUDFLARE_D1_DATABASE_ID",
       "migrations_dir": "db/migrations"
     }
@@ -17,7 +17,7 @@
   "r2_buckets": [
     {
       "binding": "EXPORTS",
-      "bucket_name": "resume-foundry-exports"
+      "bucket_name": "astro-resume-foundry-exports"
     }
   ],
   "ai": {
