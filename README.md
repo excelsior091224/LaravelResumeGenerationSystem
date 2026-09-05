@@ -17,7 +17,20 @@
 - [src/resources](src/resources)
 - [src/routes](src/routes)
 - [src/tests](src/tests)
+- [apps/resume-foundry](apps/resume-foundry) - Astro + Cloudflare Workers による保存型SaaSプロトタイプ
 - [docs/design](docs/design)
+
+## Astro + Cloudflare Workers プロトタイプ
+
+保存型の職務経歴管理SaaSへの移行検証として、`apps/resume-foundry` に Astro + Cloudflare Workers + D1 + R2 構成の初期実装を追加している。
+
+```bash
+cd apps/resume-foundry
+npm run dev
+npm run build
+```
+
+既存Laravelアプリは単発の職務経歴書生成ツールとして残しつつ、保存型の職歴ログ、認証、D1保存、PDF/DOCX/AI課金の検証はAstro側で進める。
 
 ## 開発・確認コマンド
 
